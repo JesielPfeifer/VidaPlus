@@ -1,0 +1,45 @@
+{
+    "name": "vidaplus",
+    "version": "1.0.0",
+    "description": "uninter project",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "nodemon",
+        "lint": "eslint . --ext .ts",
+        "format": "prettier --write ."
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/JesielPfeifer/VidaPlus.git"
+    },
+    "author": "Jesiel Pfeifer",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/JesielPfeifer/VidaPlus/issues"
+    },
+    "homepage": "https://github.com/JesielPfeifer/VidaPlus#readme",
+    "dependencies": {
+        "@prisma/client": "^6.9.0",
+        "bcrypt": "^6.0.0",
+        "dotenv": "^16.5.0",
+        "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "uuid": "^11.1.0"
+    },
+    "devDependencies": {
+        "@types/express": "^5.0.3",
+        "@types/jsonwebtoken": "^9.0.9",
+        "@types/node": "^22.15.30",
+        "@typescript-eslint/eslint-plugin": "^8.33.1",
+        "@typescript-eslint/parser": "^8.33.1",
+        "eslint": "^9.28.0",
+        "eslint-config-prettier": "^10.1.5",
+        "eslint-plugin-prettier": "^5.4.1",
+        "nodemon": "^3.1.10",
+        "prettier": "^3.5.3",
+        "prisma": "^6.9.0",
+        "tsx": "^4.19.4",
+        "typescript": "^5.8.3"
+    }
+}

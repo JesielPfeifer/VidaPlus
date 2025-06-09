@@ -1,0 +1,15 @@
+services:
+    db:
+        image: postgres:16
+        container_name: VidaPlus
+        restart: always
+        environment:
+            POSTGRES_USER: admin
+            POSTGRES_PASSWORD: root
+            POSTGRES_DB: VidaPlus
+        ports:
+            - '5432:5432'
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+volumes:
+    postgres-data:
