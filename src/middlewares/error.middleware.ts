@@ -7,14 +7,30 @@ import {
     UNPROCESSABLE_CONTENT,
 } from '../constants/httpCodes.constant';
 import { Prisma } from '@prisma/client';
+import { z } from 'zod';
+
+const handleZodError = (res: Response, error: z.ZodError) => {
+    const errors = error.issues.map((issue) => ({
+        code: issue.code,
+        path: issue.path.join('.'),
+        message: issue.message,
+    }));
+    return res.status(BAD_REQUEST).json({ errors });
+};
 
 const handleAppError = (res: Response, error: AppError) => {
     return res.status(error.statusCode).json({ message: error.message });
 };
 
 const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
+    if (error instanceof z.ZodError) {
+        handleZodError(res, error);
+        return;
+    }
+
     if (error instanceof AppError) {
         handleAppError(res, error);
+        return;
     }
 
     if (error instanceof Prisma.PrismaClientKnownRequestError) {

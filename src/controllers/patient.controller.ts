@@ -14,7 +14,7 @@ export const register = catchErrors(async (req: Request, res: Response) => {
 
     if (!nome || !cpf || !email) {
         res.status(BAD_REQUEST).json({
-            msg: 'Dados invalidos, preencha os campos obrigatórios',
+            msg: 'Invalid data, full in the required fields',
         });
     }
 
@@ -50,7 +50,7 @@ export const updateInfos = async (req: Request, res: Response) => {
     } catch (error) {
         console.log(error);
         res.status(INTERNAL_SERVER_ERROR).json({
-            msg: 'Erro interno no servidor',
+            msg: 'Internal server error',
             error: error,
         });
     }

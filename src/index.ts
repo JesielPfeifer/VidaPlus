@@ -2,6 +2,7 @@ import express from 'express';
 import 'dotenv/config';
 
 import { patientRouter } from './routes/patient.route';
+import { hospitalRouter } from './routes/hospital.route';
 import prisma from './lib/prisma';
 import errorHandler from './middlewares/error.middleware';
 
@@ -26,6 +27,7 @@ app.get('/', async (req, res) => {
 });
 
 app.use('/pacientes', patientRouter);
+app.use('/hospital', hospitalRouter);
 // app.use('/consulta');
 // app.use('/medicos');
 // app.use('/user');
