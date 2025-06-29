@@ -6,6 +6,7 @@ import {
     BAD_REQUEST,
     CREATED,
     NOT_FOUND,
+    OK,
 } from '../constants/httpCodes.constant';
 import { UnidadeSchema } from '../schemas/schema';
 
@@ -20,9 +21,8 @@ export class HospitalController {
         async (req: Request, res: Response) => {
             const request = UnidadeSchema.parse(req.body);
 
-            const existingHospitalUnit = await this.hospitalService.findByNome(
-                request.nome,
-            );
+            const existingHospitalUnit =
+                await this.hospitalService.hospitalUnitNameInUse(request.nome);
 
             if (existingHospitalUnit) {
                 res.status(BAD_REQUEST).json({
@@ -31,7 +31,7 @@ export class HospitalController {
                 return;
             }
 
-            const hospital = await this.hospitalService.createUnidade(request);
+            const hospital = await this.hospitalService.createUnit(request);
 
             res.status(CREATED).json(hospital);
             return;
@@ -40,18 +40,18 @@ export class HospitalController {
 
     public updateHospitalUnit = catchErrors(
         async (req: Request, res: Response) => {
-            const { unidadeNome, unidadeEndereco } = req.body;
+            const request = UnidadeSchema.parse(req.body);
 
-            const hospitalUnit = await prisma.unidade.findUnique({
-                where: { nome: unidadeNome },
-            });
+            const hospitalUnit = await this.hospitalService.findByName(
+                request.nome,
+            );
 
             if (!hospitalUnit) {
                 res.status(NOT_FOUND).json({ msg: 'Hospital unit not found' });
                 return;
             }
 
-            if (hospitalUnit.nome === unidadeNome) {
+            if (hospitalUnit.nome === request.nome) {
                 res.status(BAD_REQUEST).json({
                     msg: 'Hospital unit already exists with the same name',
                 });
@@ -59,8 +59,8 @@ export class HospitalController {
             }
 
             if (
-                hospitalUnit.endereco === unidadeEndereco ||
-                hospitalUnit.nome === unidadeNome
+                hospitalUnit.endereco === request.endereco ||
+                hospitalUnit.nome === request.nome
             ) {
                 res.status(200).json({
                     msg: 'No changes detected for the hospital unit',
@@ -68,13 +68,13 @@ export class HospitalController {
                 return;
             }
 
-            const updatedHospitalUnit = await prisma.unidade.update({
-                where: { id: hospitalUnit.id },
-                data: {
-                    nome: unidadeNome,
-                    endereco: unidadeEndereco,
+            const updatedHospitalUnit = await this.hospitalService.updateUnit(
+                hospitalUnit.id,
+                {
+                    nome: request.nome,
+                    endereco: request.endereco,
                 },
-            });
+            );
 
             res.json(updatedHospitalUnit);
             return;
@@ -83,28 +83,44 @@ export class HospitalController {
 
     public deleteHospitalUnit = catchErrors(
         async (req: Request, res: Response) => {
-            const { cpf } = req.body;
+            const request = UnidadeSchema.parse(req.body);
 
-            const patient = await prisma.paciente.findFirst({
-                where: { cpf },
-            });
+            const hospitaUnit = await this.hospitalService.findByName(
+                request.nome,
+            );
 
-            if (!patient) {
-                res.status(NOT_FOUND).json({ msg: 'Patient not found' });
-                return;
-            }
-            const appointments = await prisma.consulta.findMany({
-                where: { pacienteId: patient?.id },
-                orderBy: { data: 'desc' },
-            });
-            if (appointments.length === 0) {
-                res.status(NOT_FOUND).json({
-                    msg: 'Patient has no appointments',
+            if (!hospitaUnit) {
+                res.status(BAD_REQUEST).json({
+                    msg: 'Hospital unit does not exists',
                 });
                 return;
             }
 
-            res.json(appointments);
+            const deleteStatus = await this.hospitalService.deleteUnit(
+                hospitaUnit.id,
+            );
+            if (!deleteStatus) {
+                res.status(BAD_REQUEST).json({
+                    msg: 'Failed to delete hospital unit',
+                });
+                return;
+            }
+            res.status(200).json({
+                msg: 'Hospital unit deleted successfully',
+            });
+            return;
+        },
+    );
+    public getHospitalUnits = catchErrors(
+        async (req: Request, res: Response) => {
+            const hospitalUnits = await this.hospitalService.findAllUnits();
+
+            if (!hospitalUnits || hospitalUnits.length === 0) {
+                res.status(NOT_FOUND).json({
+                    msg: 'There are no hospital units registered',
+                });
+            }
+            res.status(OK).json({ hospitalUnits });
         },
     );
 }
