@@ -1,12 +1,9 @@
 import express from 'express';
-import {
-    register,
-    updateInfos,
-    showAppointments,
-} from '../controllers/patient.controller';
+import { PatientController } from '../controllers/patient.controller';
 
+const patientController = new PatientController();
 export const patientRouter = express.Router();
 
-patientRouter.post('/', register);
-patientRouter.put('/', updateInfos);
-patientRouter.get('/', showAppointments);
+patientRouter.post('/', patientController.registerPatient);
+patientRouter.put('/', patientController.updateInfos);
+patientRouter.get('/', patientController.showAppointments);

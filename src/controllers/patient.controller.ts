@@ -3,80 +3,127 @@ import prisma from '../lib/prisma';
 import catchErrors from '../utils/catchError';
 import {
     BAD_REQUEST,
-    INTERNAL_SERVER_ERROR,
     CREATED,
     NOT_FOUND,
+    OK,
 } from '../constants/httpCodes.constant';
+import { PacienteSchema } from '../schemas/schema';
+import { PatientService } from '../services/patient.service';
+import { HospitalService } from '../services/hospital.service';
 
-export const register = catchErrors(async (req: Request, res: Response) => {
-    const { unidadeNome, unidadeEndereco, ...dadosPaciente } = req.body;
-    const { nome, cpf, email, dataNascimento } = dadosPaciente;
+export class PatientController {
+    private patientService: PatientService;
+    private hospitalService: HospitalService;
 
-    if (!nome || !cpf || !email) {
-        res.status(BAD_REQUEST).json({
-            msg: 'Invalid data, full in the required fields',
-        });
+    constructor() {
+        this.patientService = new PatientService();
+        this.hospitalService = new HospitalService();
     }
+    /**
+     * Registers a new patient in the system.
+     * @param req - The request object containing patient data.
+     * @param res - The response object to send back the result.
+     * @returns A JSON response with the created patient information or an error message.
+     */
+    public registerPatient = catchErrors(
+        async (req: Request, res: Response) => {
+            const request = PacienteSchema.parse(req.body);
+            const { nome, cpf, email, dataNascimento } = request;
 
-    let hospitalUnit = await prisma.unidade.findFirst({
-        where: { nome: unidadeNome },
-    });
+            const hospitalUnit = await this.hospitalService.findById(
+                request.unidadeId,
+            );
 
-    if (!hospitalUnit) {
-        hospitalUnit = await prisma.unidade.create({
-            data: {
-                nome: unidadeNome,
-                endereco: unidadeEndereco,
-            },
-        });
-    }
-    const paciente = await prisma.paciente.create({
-        data: {
-            nome,
-            cpf,
-            email,
-            ...dadosPaciente,
-            dataNascimento: new Date(dataNascimento),
-            unidadeId: hospitalUnit.id,
+            if (!hospitalUnit) {
+                res.status(NOT_FOUND).json({ msg: 'Hospital unit not found' });
+                return;
+            }
+            const paciente = await this.patientService.registerPatient({
+                ...request,
+                nome,
+                cpf,
+                email,
+                dataNascimento: new Date(dataNascimento),
+                unidadeId: hospitalUnit.id,
+            });
+            if (!paciente) {
+                res.status(BAD_REQUEST).json({
+                    msg: 'Error registering patient',
+                });
+                return;
+            }
+            res.status(CREATED).json(paciente);
+            return;
         },
-    });
+    );
 
-    res.status(CREATED).json(paciente);
-});
+    /**
+     * Updates patient information.
+     * @param req - The request object containing updated patient data.
+     * @param res - The response object to send back the result.
+     * @returns A JSON response with the updated patient information or an error message.
+     */
+    public updateInfos = catchErrors(async (req: Request, res: Response) => {
+        const request = PacienteSchema.parse(req.body);
+        const { cpf, nome, email } = request;
 
-export const updateInfos = async (req: Request, res: Response) => {
-    try {
-        console.log(req);
-    } catch (error) {
-        console.log(error);
-        res.status(INTERNAL_SERVER_ERROR).json({
-            msg: 'Internal server error',
-            error: error,
-        });
-    }
-};
-
-export const showAppointments = catchErrors(
-    async (req: Request, res: Response) => {
-        const { cpf } = req.body;
-
-        const patient = await prisma.paciente.findFirst({
-            where: { cpf },
-        });
+        const patient = await this.patientService.findByCpf(cpf);
 
         if (!patient) {
             res.status(NOT_FOUND).json({ msg: 'Patient not found' });
             return;
         }
-        const appointments = await prisma.consulta.findMany({
-            where: { pacienteId: patient?.id },
-            orderBy: { data: 'desc' },
-        });
-        if (appointments.length === 0) {
-            res.status(NOT_FOUND).json({ msg: 'Patient has no appointments' });
+
+        const updatedPatient = await this.patientService.updatePatientData(
+            cpf,
+            {
+                ...request,
+                nome,
+                email,
+                telefone: request.telefone,
+                dataNascimento: new Date(request.dataNascimento),
+                genero: request.genero,
+            },
+        );
+        if (!updatedPatient) {
+            res.status(BAD_REQUEST).json({
+                msg: 'Error updating patient information',
+            });
             return;
         }
+        res.status(OK).json(updatedPatient);
+    });
 
-        res.json(appointments);
-    },
-);
+    /**
+     * Retrieves all appointments for a patient based on their CPF.
+     * @param req - The request object containing the patient's CPF.
+     * @param res - The response object to send back the appointments.
+     * @returns A JSON response with the patient's appointments or an error message.
+     */
+    public showAppointments = catchErrors(
+        async (req: Request, res: Response) => {
+            const { cpf } = req.body;
+
+            const patient = await prisma.paciente.findFirst({
+                where: { cpf },
+            });
+
+            if (!patient) {
+                res.status(NOT_FOUND).json({ msg: 'Patient not found' });
+                return;
+            }
+            const appointments = await prisma.consulta.findMany({
+                where: { pacienteId: patient?.id },
+                orderBy: { data: 'desc' },
+            });
+            if (appointments.length === 0) {
+                res.status(NOT_FOUND).json({
+                    msg: 'Patient has no appointments',
+                });
+                return;
+            }
+
+            res.json(appointments);
+        },
+    );
+}

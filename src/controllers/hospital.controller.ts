@@ -38,6 +38,13 @@ export class HospitalController {
         },
     );
 
+    /**
+     * Updates an existing hospital unit.
+     * @param req - The request object containing the updated hospital unit data.
+     * @param res - The response object to send back the result.
+     * @returns A JSON response with the updated hospital unit or an error message.
+     * @throws {Error} If the hospital unit does not exist or if there are no changes detected.
+     */
     public updateHospitalUnit = catchErrors(
         async (req: Request, res: Response) => {
             const request = UnidadeSchema.parse(req.body);
@@ -51,15 +58,8 @@ export class HospitalController {
                 return;
             }
 
-            if (hospitalUnit.nome === request.nome) {
-                res.status(BAD_REQUEST).json({
-                    msg: 'Hospital unit already exists with the same name',
-                });
-                return;
-            }
-
             if (
-                hospitalUnit.endereco === request.endereco ||
+                hospitalUnit.endereco === request.endereco &&
                 hospitalUnit.nome === request.nome
             ) {
                 res.status(200).json({

@@ -55,7 +55,21 @@ const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
     }
 
     if (error instanceof Prisma.PrismaClientValidationError) {
-        console.log(error);
+        if (
+            error.message.includes('Argument') &&
+            error.message.includes('is missing')
+        ) {
+            res.status(UNPROCESSABLE_CONTENT).json({
+                error: 'Validation Error',
+                details: (() => {
+                    const match = error?.message?.match(/`(\w+)` is missing/);
+                    const arg = match && match[1] ? match[1] : 'unknown';
+                    return `Argument \`${arg}\` is missing`;
+                })(),
+            });
+            return;
+        }
+    } else {
         res.status(UNPROCESSABLE_CONTENT).json({
             error: 'Validation Error',
             details: error.message,
@@ -64,9 +78,10 @@ const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
     }
 
     if (error instanceof Prisma.PrismaClientInitializationError) {
+        const errors = error.message.split('\n');
         res.status(500).json({
             error: 'Error during Prisma initialization',
-            details: error.message,
+            details: errors,
         });
         return;
     }

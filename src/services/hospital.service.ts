@@ -4,6 +4,9 @@ export class HospitalService {
     async findByName(nome: string) {
         return await prisma.unidade.findUnique({ where: { nome } });
     }
+    async findById(id: string) {
+        return await prisma.unidade.findUnique({ where: { id } });
+    }
 
     async createUnit(data: { nome: string; endereco: string }) {
         return await prisma.unidade.create({ data });
