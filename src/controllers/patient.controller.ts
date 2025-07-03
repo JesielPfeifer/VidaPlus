@@ -10,15 +10,19 @@ import {
 import { PacienteSchema } from '../schemas/schema';
 import { PatientService } from '../services/patient.service';
 import { HospitalService } from '../services/hospital.service';
+import { AppointmentService } from '../services/appointment.service';
 
 export class PatientController {
     private patientService: PatientService;
     private hospitalService: HospitalService;
+    private appointmentsService: AppointmentService;
 
     constructor() {
         this.patientService = new PatientService();
         this.hospitalService = new HospitalService();
+        this.appointmentsService = new AppointmentService();
     }
+
     /**
      * Registers a new patient in the system.
      * @param req - The request object containing patient data.
@@ -102,20 +106,21 @@ export class PatientController {
      */
     public showAppointments = catchErrors(
         async (req: Request, res: Response) => {
-            const { cpf } = req.body;
+            const request = PacienteSchema.parse(req.body);
+            const { cpf } = request;
 
-            const patient = await prisma.paciente.findFirst({
-                where: { cpf },
-            });
+            const patient = await this.patientService.findByCpf(cpf);
 
             if (!patient) {
                 res.status(NOT_FOUND).json({ msg: 'Patient not found' });
                 return;
             }
-            const appointments = await prisma.consulta.findMany({
-                where: { pacienteId: patient?.id },
-                orderBy: { data: 'desc' },
-            });
+
+            const appointments =
+                await this.appointmentsService.findPatientAppointments(
+                    patient?.id,
+                );
+
             if (appointments.length === 0) {
                 res.status(NOT_FOUND).json({
                     msg: 'Patient has no appointments',

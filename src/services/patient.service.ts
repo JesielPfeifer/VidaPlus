@@ -1,5 +1,4 @@
 import { prisma } from '../lib/prisma';
-import { PacienteSchema } from '../schemas/schema';
 
 export class PatientService {
     constructor() {}
@@ -27,13 +26,5 @@ export class PatientService {
         return !!(await prisma.paciente.findUnique({
             where: { cpf },
         }));
-    }
-
-    public async deleteUnit(id: string) {
-        return await prisma.paciente.delete({ where: { id } });
-    }
-
-    public async findAllUnits() {
-        return await prisma.paciente.findMany();
     }
 }
