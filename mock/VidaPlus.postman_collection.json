@@ -1,0 +1,243 @@
+{
+    "info": {
+        "_postman_id": "34fac237-f68a-4c19-8c8d-72b22a5610f8",
+        "name": "VidaPlus",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "30201252"
+    },
+    "item": [
+        {
+            "name": "Hospital",
+            "item": [
+                {
+                    "name": "Cria Unidade",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nome\": \"Hospital Lauro\",\n  \"endereco\": \"Av. Saúde, 123\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:3333/hospital",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "3333",
+                            "path": ["hospital"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Atualiza Unidade",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nome\": \"Hospital Lauro\",\n  \"endereco\": \"Av. dos Hospitais, 123\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:3333/hospital",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "3333",
+                            "path": ["hospital"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Busca todas as Unidades",
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    },
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "http://localhost:3333/hospital/",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "3333",
+                            "path": ["hospital", ""]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Deleta Unidade",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"id\": \n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:3333/hospital",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "3333",
+                            "path": ["hospital"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Paciente",
+            "item": [
+                {
+                    "name": "Cria Paciente",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nome\": \"João\",\n  \"cpf\": \"01234568792\",\n  \"email\": \"joão@exemplo.com\",\n  \"telefone\": \"01234567890\",\n  \"dataNascimento\": \"2004-02-18\",\n  \"genero\": \"Masculino\",\n  \"unidadeId\": \"0bc488f0-210a-4bbd-813a-0dc858aa21ac\"\n}\n",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "http://localhost:3333/pacientes/",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "3333",
+                            "path": ["pacientes", ""]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Atualiza dados pacientes",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nome\": \"Maria\",\n  \"cpf\": \"01232312891\",\n  \"email\": \"mari113b@exemplo.com\",\n  \"telefone\": \"01234567890\",\n  \"dataNascimento\": \"1988-07-01\",\n  \"genero\": \"Feminino\",\n  \"unidadeId\": \"0bc488f0-210a-4bbd-813a-0dc858aa21ac\"\n}\n",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "http://localhost:3333/pacientes/",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "3333",
+                            "path": ["pacientes", ""]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Profissional",
+            "item": [
+                {
+                    "name": "Cria Profissional",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nome\": \"Dr. João\",\n  \"crm\": \"123456-SP\",\n  \"coren\": null,\n  \"cargo\": \"Médico\",\n  \"especialidade\": \"Cardiologia\",\n  \"unidadeId\": \"0bc488f0-210a-4bbd-813a-0dc858aa21ac\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:3333/profissional",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "3333",
+                            "path": ["profissional"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Status",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:3333/",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "3333",
+                    "path": [""]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Mostra Consultas",
+            "protocolProfileBehavior": {
+                "disableBodyPruning": true
+            },
+            "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"cpf\": \"01231290\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "http://localhost:3333/pacientes/",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "3333",
+                    "path": ["pacientes", ""]
+                }
+            },
+            "response": []
+        }
+    ]
+}
