@@ -50,4 +50,14 @@ export class AppointmentController {
     public showAppointments = catchErrors(
         async (req: Request, res: Response) => {},
     );
+
+    /**
+     * Deletes an appointment.
+     * @param req - The request object containing the appointment ID.
+     * @param res - The response object to send back the result.
+     * @returns A JSON response indicating success or failure of the deletion.
+     */
+    public deleteAppointment = catchErrors(
+        async (req: Request, res: Response) => {},
+    );
 }

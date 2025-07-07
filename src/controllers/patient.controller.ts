@@ -106,8 +106,7 @@ export class PatientController {
      */
     public showAppointments = catchErrors(
         async (req: Request, res: Response) => {
-            const request = PacienteSchema.parse(req.body);
-            const { cpf } = request;
+            const { cpf } = req.body;
 
             const patient = await this.patientService.findByCpf(cpf);
 
@@ -118,7 +117,7 @@ export class PatientController {
 
             const appointments =
                 await this.appointmentsService.findPatientAppointments(
-                    patient?.id,
+                    patient.cpf,
                 );
 
             if (appointments.length === 0) {

@@ -29,8 +29,8 @@ model paciente {
 model profissional {
   id             String   @id @default(uuid())
   nome           String
-  crm            String?
-  coren          String?
+  crm            String?   @unique
+  coren          String?   @unique
   cargo          String
   especialidade  String?
   unidadeId      String
