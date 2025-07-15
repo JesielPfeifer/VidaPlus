@@ -2,8 +2,8 @@ import express from 'express';
 import { ProfessionalController } from '../controllers/professional.controller';
 
 const professionalController = new ProfessionalController();
-export const patientRouter = express.Router();
+export const professionalRouter = express.Router();
 
-patientRouter.post('/', professionalController.registerProfessional);
-patientRouter.put('/', professionalController.updateProfessionalData);
-patientRouter.get('/', professionalController.showAppointments);
+professionalRouter.post('/', professionalController.registerProfessional);
+professionalRouter.get('/', professionalController.getAllProfessionalAtHospital);
+professionalRouter.put('/:id', professionalController.updateProfessionalData);

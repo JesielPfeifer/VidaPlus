@@ -68,7 +68,36 @@ export class ProfessionalController {
      * @returns A JSON response with the updated professional information or an error message.
      */
     public updateProfessionalData = catchErrors(
-        async (req: Request, res: Response) => {},
+        async (req: Request, res: Response) => {
+            const request = ProfissionalSchema.parse(req.body);
+
+            const professionalData =
+                await this.professionalService.getProfessionalDataById(
+                    req.params.id,
+                );
+
+            if (!professionalData) {
+                res.status(NOT_FOUND).json({ msg: 'Professional not found' });
+                return;
+            }
+            const updatedProfessional =
+                await this.professionalService.updateProfessionalData(
+                    professionalData.id,
+                    request,
+                );
+
+            if (!updatedProfessional) {
+                res.status(BAD_REQUEST).json({
+                    msg: 'Error updating professional data',
+                });
+                return;
+            }
+            res.status(OK).json({
+                msg: 'Professional data updated successfully',
+                updatedProfessional,
+            });
+            return;
+        },
     );
 
     /**
@@ -79,5 +108,61 @@ export class ProfessionalController {
      */
     public showAppointments = catchErrors(
         async (req: Request, res: Response) => {},
+    );
+
+    /**
+     * Retrieves professional data by COREM, CRM or even ID.
+     * @param req - The request object containing the professional's ID, COREM or CRM.
+     * @param res - The response object to send back the professional data.
+     * @returns A JSON response with the professional's data or an error message.
+     */
+    public getProfessionalData = catchErrors(
+        async (req: Request, res: Response) => {
+            const { crm, coren } = req.query;
+
+            const professionalData =
+                await this.professionalService.getProfessionalDataById(
+                    req.params.id,
+                );
+
+            if (!professionalData) {
+                res.status(NOT_FOUND).json({ msg: 'Professional not found' });
+                return;
+            }
+            res.status(OK).json(professionalData);
+            return;
+        },
+    );
+
+    /**
+     * Retrieves all professional registered at hospital unit.
+     * @param req - The request object containing the professional's ID, COREM or CRM.
+     * @param res - The response object to send back the professional data.
+     * @returns A JSON response with the professional's data or an error message.
+     */
+    public getAllProfessionalAtHospital = catchErrors(
+        async (req: Request, res: Response) => {
+            const { unidadeId } = req.body;
+
+            unidadeId;
+            const hospitalUnit = await this.hospitalService.findById(unidadeId);
+            if (!hospitalUnit) {
+                res.status(NOT_FOUND).json({ msg: 'Hospital unit not found' });
+                return;
+            }
+
+            const allProfessionals =
+                await this.professionalService.getAllProfessionalsbyHospitalId(
+                    unidadeId,
+                );
+
+            if (!allProfessionals) {
+                res.status(NOT_FOUND).json({ msg: 'Professional not found' });
+                return;
+            }
+
+            res.status(OK).json(allProfessionals);
+            return;
+        },
     );
 }

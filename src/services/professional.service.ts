@@ -17,11 +17,24 @@ export class ProfessionalService {
         return professionalData ? professionalData : null;
     }
 
+    public async getProfessionalDataById(id: string) {
+        const professionalData = await prisma.profissional.findUnique({
+            where: { id },
+        });
+        return professionalData ? professionalData : null;
+    }
+
     public async registerProfessional(data: any) {
         return await prisma.profissional.create({ data });
     }
 
-    public async updateProfessionalData(crm: string, data: any) {
-        return await prisma.profissional.update({ where: { crm }, data });
+    public async updateProfessionalData(id: string, data: any) {
+        return await prisma.profissional.update({ where: { id }, data });
+    }
+
+    public async getAllProfessionalsbyHospitalId(hospitalId: string) {
+        return await prisma.profissional.findMany({
+            where: { unidadeId: hospitalId },
+        });
     }
 }
