@@ -107,7 +107,34 @@ export class ProfessionalController {
      * @returns A JSON response with the professional's appointments or an error message.
      */
     public showAppointments = catchErrors(
-        async (req: Request, res: Response) => {},
+        async (req: Request, res: Response) => {
+            const professionalId = req.params.id;
+
+            const professionalData =
+                await this.professionalService.getProfessionalDataById(
+                    professionalId,
+                );
+
+            if (!professionalData) {
+                res.status(NOT_FOUND).json({ msg: 'Professional not found' });
+                return;
+            }
+
+            const appointments =
+                await this.appointmentsService.getAppointmentsByProfessionalId(
+                    professionalId,
+                );
+
+            if (!appointments) {
+                res.status(NOT_FOUND).json({
+                    msg: 'No appointments found for this professional',
+                });
+                return;
+            }
+
+            res.status(OK).json(appointments);
+            return;
+        },
     );
 
     /**
@@ -118,8 +145,6 @@ export class ProfessionalController {
      */
     public getProfessionalData = catchErrors(
         async (req: Request, res: Response) => {
-            const { crm, coren } = req.query;
-
             const professionalData =
                 await this.professionalService.getProfessionalDataById(
                     req.params.id,
@@ -144,8 +169,8 @@ export class ProfessionalController {
         async (req: Request, res: Response) => {
             const { unidadeId } = req.body;
 
-            unidadeId;
             const hospitalUnit = await this.hospitalService.findById(unidadeId);
+
             if (!hospitalUnit) {
                 res.status(NOT_FOUND).json({ msg: 'Hospital unit not found' });
                 return;
@@ -162,6 +187,37 @@ export class ProfessionalController {
             }
 
             res.status(OK).json(allProfessionals);
+            return;
+        },
+    );
+
+    /**
+     * Deletes a professional by their ID.
+     * @param req - The request object containing the professional's ID.
+     * @param res - The response object to send back the result.
+     * @returns A JSON response indicating success or failure of the deletion.
+     */
+    public deleteProfessional = catchErrors(
+        async (req: Request, res: Response) => {
+            const professionalId = req.params.id;
+
+            const professionalData =
+                await this.professionalService.getProfessionalDataById(
+                    professionalId,
+                );
+
+            if (!professionalData) {
+                res.status(NOT_FOUND).json({ msg: 'Professional not found' });
+                return;
+            }
+
+            await this.professionalService.deleteProfessional(
+                professionalData.id,
+            );
+
+            res.status(OK).json({
+                msg: 'Professional deleted successfully',
+            });
             return;
         },
     );

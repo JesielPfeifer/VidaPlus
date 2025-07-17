@@ -37,4 +37,9 @@ export class ProfessionalService {
             where: { unidadeId: hospitalId },
         });
     }
+    public async deleteProfessional(professionalId: string) {
+        return await prisma.profissional.delete({
+            where: { id: professionalId },
+        });
+    }
 }
