@@ -44,4 +44,26 @@ export class PatientService {
             where: { cpf },
         }));
     }
+
+    /**
+     * Finds a patient by their ID.
+     * @param id - The ID of the patient.
+     * @returns Patient data or null if not found.
+     */
+    public async findPatientById(id: string) {
+        return await prisma.paciente.findUnique({
+            where: { id },
+        });
+    }
+
+    /**
+     * Finds a patient by their ID.
+     * @param id - The ID of the patient.
+     * @returns Patient data or null if not found.
+     */
+    public async deletePatienById(id: string) {
+        return await prisma.paciente.delete({
+            where: { id },
+        });
+    }
 }

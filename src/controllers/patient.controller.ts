@@ -130,4 +130,33 @@ export class PatientController {
             res.json(appointments);
         },
     );
+
+    /**
+     * Deletes a patient by their ID.
+     * @param req - The request object containing the patient's ID.
+     * @returns A JSON response indicating the success or failure of the deletion.
+     */
+    public deletePatient = catchErrors(async (req: Request, res: Response) => {
+        const patientId = req.params.id;
+
+        const patient = await this.patientService.findPatientById(patientId);
+
+        if (!patient) {
+            res.status(NOT_FOUND).json({ msg: 'Patient not found' });
+            return;
+        }
+
+        const deletedPatient =
+            await this.patientService.deletePatienById(patientId);
+
+        if (!deletedPatient) {
+            res.status(BAD_REQUEST).json({
+                msg: 'Error deleting patient',
+            });
+            return;
+        }
+
+        res.status(OK).json({ msg: 'Patient deleted successfully' });
+        return;
+    });
 }
