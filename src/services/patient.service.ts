@@ -57,6 +57,17 @@ export class PatientService {
     }
 
     /**
+     * Checks if a patient exists by their ID.
+     * @param id - The ID of the patient to check.
+     * @returns True if the patient exists, false otherwise.
+     */
+    public async existsPatient(id: string) {
+        const patient = await prisma.paciente.findUnique({
+            where: { id },
+        });
+        return !!patient;
+    }
+    /**
      * Finds a patient by their ID.
      * @param id - The ID of the patient.
      * @returns Patient data or null if not found.

@@ -6,21 +6,39 @@ import {
     NOT_FOUND,
     OK,
 } from '../constants/httpCodes.constant';
-import { PacienteSchema } from '../schemas/schema';
 import { PatientService } from '../services/patient.service';
 import { HospitalService } from '../services/hospital.service';
+import { ConsultaSchema } from '../schemas/schema';
+import { ProfessionalService } from '../services/professional.service';
+import { AppointmentService } from '../services/appointment.service';
 
 export class AppointmentController {
     private patientService: PatientService;
     private hospitalService: HospitalService;
-    private professionalService: any;
+    private professionalService: ProfessionalService;
+    private appointmentService: AppointmentService;
 
     constructor() {
         this.patientService = new PatientService();
         this.hospitalService = new HospitalService();
-        this.professionalService = null;
+        this.professionalService = new ProfessionalService();
+        this.appointmentService = new AppointmentService();
     }
 
+    private async validateAppointmentData(
+        pacienteId: string,
+        profissionalId: string,
+        unidadeId: string,
+    ): Promise<boolean> {
+        const patientExists =
+            await this.patientService.existsPatient(pacienteId);
+        const hospitalUnitExists =
+            await this.hospitalService.existsHospitalUnit(unidadeId);
+        const professionalExists =
+            await this.professionalService.existsProfessional(profissionalId);
+
+        return patientExists && hospitalUnitExists && professionalExists;
+    }
     /**
      * Registers a new appointment for a patient.
      * @param req - The request object containing patient data.
@@ -28,7 +46,35 @@ export class AppointmentController {
      * @returns A JSON response with the created patient information or an error message.
      */
     public registerAppointment = catchErrors(
-        async (req: Request, res: Response) => {},
+        async (req: Request, res: Response) => {
+            const request = ConsultaSchema.parse(req.body);
+            const { pacienteId, profissionalId, unidadeId, ...params } =
+                request;
+
+            const hasValidData = await this.validateAppointmentData(
+                pacienteId,
+                profissionalId,
+                unidadeId,
+            );
+
+            if (!hasValidData) {
+                return res.status(NOT_FOUND).json({
+                    message: 'Invalid data provided.',
+                });
+            }
+            const appointment =
+                await this.appointmentService.registerAppointment({
+                    pacienteId,
+                    profissionalId,
+                    unidadeId,
+                    ...params,
+                });
+
+            return res.status(CREATED).json({
+                message: 'Appointment registered successfully.',
+                appointment,
+            });
+        },
     );
 
     /**
@@ -38,7 +84,10 @@ export class AppointmentController {
      * @returns A JSON response with the updated appointment or an error message.
      */
     public updateAppointmentData = catchErrors(
-        async (req: Request, res: Response) => {},
+        async (req: Request, res: Response) => {
+            const request = ConsultaSchema.parse(req.body);
+            
+        },
     );
 
     /**

@@ -28,4 +28,41 @@ export class AppointmentService {
         });
         return patientAppointments.length > 0 ? patientAppointments : [];
     }
+
+    /**
+     * Registers a new appointment.
+     * @param data - The appointment data to register.
+     * @returns The created appointment data.
+     */
+    public async registerAppointment(data: any) {
+        return await prisma.consulta.create({ data });
+    }
+
+    /**
+     * Updates an existing appointment.
+     * @param appointmentId - The ID of the appointment to update.
+     * @param data - The updated appointment data.
+     * @returns
+     */
+    public async updateAppointmentData(id: string, data: any) {
+        return await prisma.consulta.update({ where: { id }, data });
+    }
+
+    /**
+     * Deletes an appointment by its ID.
+     * @param id - The ID of the appointment to delete.
+     * @returns The deleted appointment data.
+     */
+    public async deleteAppointment(id: string) {
+        return await prisma.consulta.delete({ where: { id } });
+    }
+
+    /**
+     * Find an appointment by ID.
+     * @param id - The ID of the appointment.
+     * @returns The appointment data or null if not found.
+     */
+    public async findAppointmentById(id: string) {
+        return await prisma.consulta.findUnique({ where: { id } });
+    }
 }

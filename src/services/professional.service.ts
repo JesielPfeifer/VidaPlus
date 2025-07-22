@@ -42,4 +42,11 @@ export class ProfessionalService {
             where: { id: professionalId },
         });
     }
+
+    public async existsProfessional(id: string) {
+        const professional = await prisma.profissional.findUnique({
+            where: { id },
+        });
+        return !!professional;
+    }
 }
