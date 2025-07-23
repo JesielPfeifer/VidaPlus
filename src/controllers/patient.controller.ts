@@ -99,39 +99,6 @@ export class PatientController {
     });
 
     /**
-     * Retrieves all appointments for a patient based on their CPF.
-     * @param req - The request object containing the patient's CPF.
-     * @param res - The response object to send back the appointments.
-     * @returns A JSON response with the patient's appointments or an error message.
-     */
-    public showAppointments = catchErrors(
-        async (req: Request, res: Response) => {
-            const { cpf } = req.body;
-
-            const patient = await this.patientService.findByCpf(cpf);
-
-            if (!patient) {
-                res.status(NOT_FOUND).json({ msg: 'Patient not found' });
-                return;
-            }
-
-            const appointments =
-                await this.appointmentsService.findPatientAppointments(
-                    patient.cpf,
-                );
-
-            if (appointments.length === 0) {
-                res.status(NOT_FOUND).json({
-                    msg: 'Patient has no appointments',
-                });
-                return;
-            }
-
-            res.json(appointments);
-        },
-    );
-
-    /**
      * Deletes a patient by their ID.
      * @param req - The request object containing the patient's ID.
      * @returns A JSON response indicating the success or failure of the deletion.

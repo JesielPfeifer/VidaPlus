@@ -101,43 +101,6 @@ export class ProfessionalController {
     );
 
     /**
-     * Retrieves appointments for a specific professional.
-     * @param req - The request object containing the professional's ID.
-     * @param res - The response object to send back the appointments.
-     * @returns A JSON response with the professional's appointments or an error message.
-     */
-    public showAppointments = catchErrors(
-        async (req: Request, res: Response) => {
-            const professionalId = req.params.id;
-
-            const professionalData =
-                await this.professionalService.getProfessionalDataById(
-                    professionalId,
-                );
-
-            if (!professionalData) {
-                res.status(NOT_FOUND).json({ msg: 'Professional not found' });
-                return;
-            }
-
-            const appointments =
-                await this.appointmentsService.getAppointmentsByProfessionalId(
-                    professionalId,
-                );
-
-            if (!appointments) {
-                res.status(NOT_FOUND).json({
-                    msg: 'No appointments found for this professional',
-                });
-                return;
-            }
-
-            res.status(OK).json(appointments);
-            return;
-        },
-    );
-
-    /**
      * Retrieves professional data by COREM, CRM or even ID.
      * @param req - The request object containing the professional's ID, COREM or CRM.
      * @param res - The response object to send back the professional data.

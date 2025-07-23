@@ -123,3 +123,10 @@ model internacao {
   paciente    paciente @relation(fields: [pacienteId], references: [id])
   unidade     unidade  @relation(fields: [unidadeId], references: [id])
 }
+
+model usuario_admin {
+  id      String  @id @default(uuid())
+  nome    String
+  email   String  @unique
+  senha   String
+}

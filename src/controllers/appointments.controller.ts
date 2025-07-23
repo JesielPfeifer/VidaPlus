@@ -85,8 +85,37 @@ export class AppointmentController {
      */
     public updateAppointmentData = catchErrors(
         async (req: Request, res: Response) => {
+            const appointmentId = req.params.id;
             const request = ConsultaSchema.parse(req.body);
-            
+
+            const hasValidData = await this.validateAppointmentData(
+                request.pacienteId,
+                request.profissionalId,
+                request.unidadeId,
+            );
+
+            if (!hasValidData) {
+                return res.status(NOT_FOUND).json({
+                    message: 'Invalid data provided.',
+                });
+            }
+
+            const updatedAppointment =
+                await this.appointmentService.updateAppointmentData(
+                    appointmentId,
+                    request,
+                );
+
+            if (!updatedAppointment) {
+                return res.status(NOT_FOUND).json({
+                    message: 'Appointment not found.',
+                });
+            }
+
+            return res.status(OK).json({
+                message: 'Appointment updated successfully.',
+                appointment: updatedAppointment,
+            });
         },
     );
 
@@ -101,12 +130,95 @@ export class AppointmentController {
     );
 
     /**
+     * Retrieves appointments for a specific professional.
+     * @param req - The request object containing the professional's ID.
+     * @param res - The response object to send back the appointments.
+     * @returns A JSON response with the professional's appointments or an error message.
+     */
+    public showProfessionalAppointments = catchErrors(
+        async (req: Request, res: Response) => {
+            const professionalId = req.params.id;
+
+            const professionalData =
+                await this.professionalService.getProfessionalDataById(
+                    professionalId,
+                );
+
+            if (!professionalData) {
+                res.status(NOT_FOUND).json({ msg: 'Professional not found' });
+                return;
+            }
+
+            const appointments =
+                await this.appointmentService.getAppointmentsByProfessionalId(
+                    professionalId,
+                );
+
+            if (!appointments) {
+                res.status(NOT_FOUND).json({
+                    msg: 'No appointments found for this professional',
+                });
+                return;
+            }
+
+            res.status(OK).json(appointments);
+            return;
+        },
+    );
+
+    /**
+     * Retrieves all appointments for a patient based on their CPF.
+     * @param req - The request object containing the patient's CPF.
+     * @param res - The response object to send back the appointments.
+     * @returns A JSON response with the patient's appointments or an error message.
+     */
+    public showPatientAppointments = catchErrors(
+        async (req: Request, res: Response) => {
+            const { cpf } = req.body;
+
+            const patient = await this.patientService.findByCpf(cpf);
+
+            if (!patient) {
+                res.status(NOT_FOUND).json({ msg: 'Patient not found' });
+                return;
+            }
+
+            const appointments =
+                await this.appointmentService.findPatientAppointments(
+                    patient.cpf,
+                );
+
+            if (appointments.length === 0) {
+                res.status(NOT_FOUND).json({
+                    msg: 'Patient has no appointments',
+                });
+                return;
+            }
+
+            res.json(appointments);
+        },
+    );
+
+    /**
      * Deletes an appointment.
      * @param req - The request object containing the appointment ID.
      * @param res - The response object to send back the result.
      * @returns A JSON response indicating success or failure of the deletion.
      */
     public deleteAppointment = catchErrors(
-        async (req: Request, res: Response) => {},
+        async (req: Request, res: Response) => {
+            const appointmentId = req.params.id;
+
+            const deleted =
+                await this.appointmentService.deleteAppointment(appointmentId);
+
+            if (!deleted) {
+                res.status(NOT_FOUND).json({ msg: 'Appointment not found' });
+                return;
+            }
+
+            res.status(OK).json({ msg: 'Appointment deleted successfully' });
+            return;
+        },
     );
 }

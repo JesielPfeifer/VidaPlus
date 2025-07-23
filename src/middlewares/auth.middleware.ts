@@ -11,19 +11,23 @@ export const checkingAuth = (
         const token = authHeader?.split(' ')[1];
 
         if (!authHeader) {
-            return res.status(401).json({ msg: 'Token não fornecido' });
+            res.status(401).json({ msg: 'Token não fornecido' });
+            return;
         }
         if (!token) {
-            return res.status(401).json({ msg: 'Token inválido' });
+            res.status(401).json({ msg: 'Token inválido' });
+            return;
         }
 
         const payload = new Token().validateToken(token);
         if (!payload || !payload.id) {
-            return res.status(401).json({ msg: 'Não autorizado' });
+            res.status(401).json({ msg: 'Não autorizado' });
+            return;
         }
 
         next();
     } catch (error: any) {
-        return res.status(500).json({ msg: 'Erro interno no servidor' });
+        res.status(500).json({ msg: 'Erro interno no servidor' });
+        return;
     }
 };

@@ -1,11 +1,14 @@
 import express from 'express';
 import 'dotenv/config';
+import prisma from './lib/prisma';
+import errorHandler from './middlewares/error.middleware';
 
 import { patientRouter } from './routes/patient.route';
 import { hospitalRouter } from './routes/hospital.route';
 import { professionalRouter } from './routes/professional.route';
-import prisma from './lib/prisma';
-import errorHandler from './middlewares/error.middleware';
+import { appointmentRouter } from './routes/appointment.route';
+import { adminRouter } from './routes/admin.route';
+import { checkingAuth } from './middlewares/auth.middleware';
 
 const app = express();
 const PORT = process.env.PORT || 3333;
@@ -30,9 +33,9 @@ app.get('/', async (req, res) => {
 app.use('/pacientes', patientRouter);
 app.use('/hospital', hospitalRouter);
 app.use('/profissional', professionalRouter);
-// app.use('/consulta');
+app.use('/consulta', appointmentRouter);
+app.use('/admin', checkingAuth, adminRouter);
 // app.use('/medicos');
-// app.use('/user');
 
 app.use(errorHandler);
 

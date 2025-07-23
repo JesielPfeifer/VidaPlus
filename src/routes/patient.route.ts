@@ -6,4 +6,4 @@ export const patientRouter = express.Router();
 
 patientRouter.post('/', patientController.registerPatient);
 patientRouter.put('/', patientController.updateInfos);
-patientRouter.get('/', patientController.showAppointments);
+patientRouter.delete('/', patientController.deletePatient);
