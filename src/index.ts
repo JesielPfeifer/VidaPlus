@@ -2,6 +2,7 @@ import express from 'express';
 import 'dotenv/config';
 import prisma from './lib/prisma';
 import errorHandler from './middlewares/error.middleware';
+import { PORT } from './constants/envs.constant';
 
 import { patientRouter } from './routes/patient.route';
 import { hospitalRouter } from './routes/hospital.route';
@@ -11,7 +12,6 @@ import { adminRouter } from './routes/admin.route';
 import { checkingAuth } from './middlewares/auth.middleware';
 
 const app = express();
-const PORT = process.env.PORT || 3333;
 
 app.use(express.json());
 

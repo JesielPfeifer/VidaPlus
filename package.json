@@ -20,7 +20,7 @@
     },
     "homepage": "https://github.com/JesielPfeifer/VidaPlus#readme",
     "dependencies": {
-        "@prisma/client": "^6.9.0",
+        "@prisma/client": "^6.12.0",
         "bcrypt": "^6.0.0",
         "dotenv": "^16.5.0",
         "express": "^5.1.0",
@@ -29,6 +29,7 @@
         "zod": "^3.25.67"
     },
     "devDependencies": {
+        "@types/bcrypt": "^6.0.0",
         "@types/express": "^5.0.3",
         "@types/jsonwebtoken": "^9.0.9",
         "@types/node": "^22.15.30",

@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import catchErrors from '../utils/catchError';
 import {
     BAD_REQUEST,
@@ -6,89 +8,86 @@ import {
     NOT_FOUND,
     OK,
 } from '../constants/httpCodes.constant';
-import { PatientService } from '../services/patient.service';
-import { HospitalService } from '../services/hospital.service';
-import { ConsultaSchema } from '../schemas/schema';
-import { ProfessionalService } from '../services/professional.service';
-import { AppointmentService } from '../services/appointment.service';
-
+import { AdminService } from '../services/admin.service';
+import { JWT_SECRET } from '../constants/envs.constant';
+import { LoginSchema, RegisterSchema } from '../schemas/authentication.schema';
+import { comparePasswords, hashPassword } from '../utils/bcrypt.util';
+import { signJwt } from '../utils/jwt.utils';
 export class AdminController {
-    public async register(req: Request, res: Response) {
-        const { nome, email, senha } = req.body;
+    private adminService: AdminService;
 
-        if (!nome || !email || !senha) {
-            return res
-                .status(BAD_REQUEST)
-                .json({ error: 'Nome, email e senha são obrigatórios.' });
-        }
+    constructor() {
+        this.adminService = new AdminService();
+    }
 
-        const usuarioExistente = await prisma.usuario.findUnique({
-            where: { email },
-        });
-        if (usuarioExistente) {
-            return res
-                .status(BAD_REQUEST)
-                .json({ error: 'E-mail já cadastrado.' });
-        }
+    public register = catchErrors(async (req: Request, res: Response) => {
+        const request = RegisterSchema.parse(req.body);
 
-        const senhaHash = await bcrypt.hash(senha, 10);
-
-        const usuario = await prisma.usuario.create({
-            data: { nome, email, senha: senhaHash },
-        });
-
-        const token = jwt.sign(
-            { id: usuario.id, email: usuario.email },
-            JWT_SECRET,
-            { expiresIn: '1d' },
+        const existsAdmin = await this.adminService.getAdminByEmail(
+            request.email,
         );
+
+        if (existsAdmin) {
+            res.status(BAD_REQUEST).json({
+                error: 'E-mail is already in use. Please use a different one.',
+            });
+            return;
+        }
+
+        const hashedPassword = await hashPassword(request.senha);
+
+        const newAdmin = await this.adminService.createAdmin({
+            ...request,
+            senha: hashedPassword,
+        });
+
+        const token = signJwt({ id: newAdmin.id });
 
         res.status(CREATED).json({
             msg: 'Admin registered successfully',
             usuario: {
-                id: usuario.id,
-                nome: usuario.nome,
-                email: usuario.email,
+                id: newAdmin.id,
+                nome: newAdmin.nome,
+                email: newAdmin.email,
             },
             token,
         });
-    }
+    });
 
-    public async login(req: Request, res: Response) {
-        const { email, senha } = req.body;
+    public login = catchErrors(async (req: Request, res: Response) => {
+        const request = LoginSchema.parse(req.body);
 
-        if (!email || !senha) {
-            return res
-                .status(BAD_REQUEST)
-                .json({ error: 'E-mail e senha são obrigatórios.' });
+        const adminUser = await this.adminService.getAdminByEmail(
+            request.email,
+        );
+
+        if (!adminUser) {
+            res.status(NOT_FOUND).json({ error: 'Invalid email or password' });
+            return;
         }
 
-        const usuario = await prisma.usuario.findUnique({ where: { email } });
-        if (!usuario) {
-            return res
-                .status(NOT_FOUND)
-                .json({ error: 'Usuário não encontrado.' });
-        }
+        const validPassword = await comparePasswords(
+            request.senha,
+            adminUser.senha,
+        );
 
-        const senhaValida = await bcrypt.compare(senha, usuario.senha);
-        if (!senhaValida) {
-            return res.status(BAD_REQUEST).json({ error: 'Senha incorreta.' });
+        if (!validPassword) {
+            res.status(BAD_REQUEST).json({
+                error: 'Invalid email or password',
+            });
+            return;
         }
 
         const token = jwt.sign(
-            { id: usuario.id, email: usuario.email },
+            { id: adminUser.id, email: adminUser.email },
             JWT_SECRET,
             { expiresIn: '1d' },
         );
 
         res.status(OK).json({
             msg: 'Admin logged in successfully',
-            usuario: {
-                id: usuario.id,
-                nome: usuario.nome,
-                email: usuario.email,
-            },
+            usuario: adminUser,
             token,
         });
-    }
+    });
 }

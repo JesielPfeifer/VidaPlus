@@ -5,8 +5,11 @@ const professionalController = new ProfessionalController();
 export const professionalRouter = express.Router();
 
 professionalRouter.post('/', professionalController.registerProfessional);
-professionalRouter.get('/consulta/:id', professionalController.showAppointments);
+//professionalRouter.get('/consulta/:id', professionalController.showAppointments);
 professionalRouter.get('/:id', professionalController.getProfessionalData);
 professionalRouter.put('/:id', professionalController.updateProfessionalData);
 professionalRouter.delete('/:id', professionalController.deleteProfessional);
-professionalRouter.get('/', professionalController.getAllProfessionalAtHospital,);
+professionalRouter.get(
+    '/',
+    professionalController.getAllProfessionalAtHospital,
+);

@@ -43,36 +43,69 @@ Sistema de Gestão Hospitalar e de Serviços de Saúde (SGHSS) para a instituiç
 - Prisma ORM
 - PostgreSQL (via Docker)
 - Express.js
+- Zod
 
 ## Como rodar o projeto
 
 1. Clone o repositório
+
+    ```git
+    git clone https://github.com/JesielPfeifer/VidaPlus.git
+    ```
+
 2. Instale as dependências:
+
     ```bash
     npm install
     ```
+
 3. Suba o banco de dados com Docker:
+
     ```bash
     docker-compose up -d
     ```
-4. Execute as migrations do Prisma:
+
+4. Inicie o prisma-client:
+
+    ```bash
+    npx prisma generate
+    ```
+
+5. Execute as migrations do Prisma:
+
     ```bash
     npx prisma migrate deploy
     ```
-5. (Opcional) Popule o banco com dados de exemplo:
+
+6. (Opcional) Popule o banco com dados de exemplo:
 
     ```bash
     psql -h localhost -U postgres -d sghss -f prisma/seed.sql
     ```
 
-6. Inicie a aplicação:
+7. Inicie a aplicação:
+
     ```bash
     npm run dev
     ```
 
-Obs: para alterar algum dado das tabelas do prisma, faça a alteraçao no arquivo ./prisma/schema.prisma e rode o comando `npx prisma migrate dev`
+Obs: para alterar algum dado das tabelas do prisma, faça a alteraçao no arquivo ./prisma/schema.prisma e rode o comando:
+
+```bash
+npx prisma migrate dev
+```
 
 ## Exemplos de uso das APIs
+
+_IMPORTANTE_
+Devido a um bug do Prisma, é necessário o envio de datas como objeto Date() do JavaScript, por exemplo:
+
+```js
+/*
+Bug documentado em: https://www.prisma.io/docs/orm/reference/prisma-schema-reference#datetime
+*/
+new Date('1999-04-03');
+```
 
 ### Cadastro de Paciente
 
