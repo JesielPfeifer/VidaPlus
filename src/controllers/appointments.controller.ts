@@ -174,9 +174,10 @@ export class AppointmentController {
      */
     public showPatientAppointments = catchErrors(
         async (req: Request, res: Response) => {
-            const { cpf } = req.body;
+            const patientId = req.params.id;
 
-            const patient = await this.patientService.findByCpf(cpf);
+            const patient =
+                await this.patientService.findPatientById(patientId);
 
             if (!patient) {
                 res.status(NOT_FOUND).json({ msg: 'Patient not found' });
@@ -185,10 +186,10 @@ export class AppointmentController {
 
             const appointments =
                 await this.appointmentService.findPatientAppointments(
-                    patient.cpf,
+                    patient.id,
                 );
 
-            if (appointments.length === 0) {
+            if (appointments?.length === 0) {
                 res.status(NOT_FOUND).json({
                     msg: 'Patient has no appointments',
                 });

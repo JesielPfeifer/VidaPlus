@@ -114,7 +114,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"id\": \n}"
+							"raw": "{\n  \"id\": \"b6580eb5-d844-4963-be96-b832b670104c\"\n}"
 						},
 						"url": {
 							"raw": "http://localhost:3333/hospital",
@@ -142,7 +142,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"nome\": \"Maicon\",\n  \"cpf\": \"01234567890\",\n  \"email\": \"maicon@email.com\",\n  \"telefone\": \"51999887766\",\n  \"dataNascimento\": \"2001-02-18\",\n  \"genero\": \"Masculino\",\n  \"unidadeId\": \"0bc488f0-210a-4bbd-813a-0dc858aa21ac\"\n}\n",
+							"raw": "{\n  \"nome\": \"Maicon\",\n  \"cpf\": \"01234567890\",\n  \"email\": \"maicon@email.com\",\n  \"telefone\": \"51999887766\",\n  \"dataNascimento\": \"2001-02-18\",\n  \"genero\": \"Masculino\",\n  \"unidadeId\": \"83c01dfa-0908-4b0d-9c61-3607f9788d2b\"\n}\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -174,7 +174,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"cpf\": \"01234567890\"\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -182,15 +182,16 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3333/pacientes/",
+							"raw": "http://localhost:3333/consulta/paciente/6b915216-da6b-4041-88ed-3b29beb666f8",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3333",
 							"path": [
-								"pacientes",
-								""
+								"consulta",
+								"paciente",
+								"6b915216-da6b-4041-88ed-3b29beb666f8"
 							]
 						}
 					},
@@ -271,7 +272,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"nome\": \"Dr. João\",\n  \"crm\": \"123456-SP\",\n  \"cargo\": \"Médico\",\n  \"especialidade\": \"Cardiologia\",\n  \"unidadeId\": \"0bc488f0-210a-4bbd-813a-0dc858aa21ac\"\n}"
+							"raw": "{\n  \"nome\": \"Dra. Maria\",\n  \"crm\": \"678901-SP\",\n  \"cargo\": \"Médico\",\n  \"especialidade\": \"Neurologista\",\n  \"unidadeId\": \"83c01dfa-0908-4b0d-9c61-3607f9788d2b\"\n}"
 						},
 						"url": {
 							"raw": "http://localhost:3333/profissional",
@@ -326,7 +327,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"unidadeId\": \"0bc488f0-210a-4bbd-813a-0dc858aa21ac\"\n}",
+							"raw": "{\n  \"unidadeId\": \"83c01dfa-0908-4b0d-9c61-3607f9788d2b\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -358,7 +359,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"unidadeId\": \"0bc488f0-210a-4bbd-813a-0dc858aa21ac\"\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -366,15 +367,16 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3333/profissional/",
+							"raw": "http://localhost:3333/consulta/profissional/83c01dfa-0908-4b0d-9c61-3607f9788d2b",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3333",
 							"path": [
+								"consulta",
 								"profissional",
-								""
+								"83c01dfa-0908-4b0d-9c61-3607f9788d2b"
 							]
 						}
 					},
@@ -398,7 +400,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3333/profissional/",
+							"raw": "http://localhost:3333/profissional/3bd662f6-cf79-4e53-a626-5b65652629a5",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -406,7 +408,7 @@
 							"port": "3333",
 							"path": [
 								"profissional",
-								""
+								"3bd662f6-cf79-4e53-a626-5b65652629a5"
 							]
 						}
 					},
@@ -418,7 +420,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3333/profissional/",
+							"raw": "http://localhost:3333/profissional/3bd662f6-cf79-4e53-a626-5b65652629a5",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -426,7 +428,7 @@
 							"port": "3333",
 							"path": [
 								"profissional",
-								""
+								"3bd662f6-cf79-4e53-a626-5b65652629a5"
 							]
 						}
 					},
@@ -438,13 +440,13 @@
 			"name": "Consulta",
 			"item": [
 				{
-					"name": "Cria Paciente Copy",
+					"name": "Cria consulta",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"nome\": \"Maicon\",\n  \"cpf\": \"01234567890\",\n  \"email\": \"maicon@email.com\",\n  \"telefone\": \"51999887766\",\n  \"dataNascimento\": \"2001-02-18\",\n  \"genero\": \"Masculino\",\n  \"unidadeId\": \"0bc488f0-210a-4bbd-813a-0dc858aa21ac\"\n}\n",
+							"raw": "{\n\"pacienteId\": \"6b915216-da6b-4041-88ed-3b29beb666f8\",\n\"profissionalId\": \"3bd662f6-cf79-4e53-a626-5b65652629a5\",\n\"unidadeId\": \"83c01dfa-0908-4b0d-9c61-3607f9788d2b\",\n\"data\": \"2025-06-10T10:00:00.000Z\",\n\"tipo\": \"Consulta\",\n\"status\": \"Concluída\",\n\"observacoes\": \"Paciente apresentou sintomas leves de gripe.\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -452,14 +454,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3333/pacientes/",
+							"raw": "http://localhost:3333/consulta/",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3333",
 							"path": [
-								"pacientes",
+								"consulta",
 								""
 							]
 						}
@@ -467,7 +469,7 @@
 					"response": []
 				},
 				{
-					"name": "Mostra Consultas Copy",
+					"name": "Mostra consultas",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -499,7 +501,7 @@
 					"response": []
 				},
 				{
-					"name": "Deleta um paciente Copy",
+					"name": "Deleta consulta",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -528,7 +530,7 @@
 					"response": []
 				},
 				{
-					"name": "Atualiza dados pacientes Copy",
+					"name": "Atualiza dados da consulta",
 					"request": {
 						"method": "PUT",
 						"header": [],

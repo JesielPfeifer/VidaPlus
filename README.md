@@ -6,36 +6,36 @@ Sistema de Gestão Hospitalar e de Serviços de Saúde (SGHSS) para a instituiç
 
 - **Cadastro e Atendimento de Pacientes:**
 
-    - Cadastro de pacientes
-    - Visualização de histórico clínico
-    - Agendamento/cancelamento de consultas
-    - Prontuários e exames
-    - Teleconsulta
+  - Cadastro de pacientes
+  - Visualização de histórico clínico
+  - Agendamento/cancelamento de consultas
+  - Prontuários e exames
+  - Teleconsulta
 
 - **Gestão de Profissionais de Saúde:**
 
-    - Cadastro de médicos, enfermeiros e técnicos
-    - Gerenciamento de agendas
-    - Atualização de prontuários
-    - Emissão de receitas digitais
+  - Cadastro de médicos, enfermeiros e técnicos
+  - Gerenciamento de agendas
+  - Atualização de prontuários
+  - Emissão de receitas digitais
 
 - **Administração Hospitalar:**
 
-    - Gerenciamento de leitos
-    - Relatórios financeiros
-    - Controle de suprimentos
+  - Gerenciamento de leitos
+  - Relatórios financeiros
+  - Controle de suprimentos
 
 - **Telemedicina:**
 
-    - Atendimentos e prescrições online
-    - Marcação de consultas/exames presenciais
-    - Videochamadas seguras
+  - Atendimentos e prescrições online
+  - Marcação de consultas/exames presenciais
+  - Videochamadas seguras
 
 - **Segurança e Compliance:**
-    - Controle de acesso por perfil
-    - Criptografia de dados sensíveis
-    - Registro de logs e auditoria
-    - Conformidade com a LGPD
+  - Controle de acesso por perfil
+  - Criptografia de dados sensíveis
+  - Registro de logs e auditoria
+  - Conformidade com a LGPD
 
 ## Tecnologias
 
@@ -77,13 +77,7 @@ Sistema de Gestão Hospitalar e de Serviços de Saúde (SGHSS) para a instituiç
     npx prisma migrate deploy
     ```
 
-6. (Opcional) Popule o banco com dados de exemplo:
-
-    ```bash
-    psql -h localhost -U postgres -d sghss -f prisma/seed.sql
-    ```
-
-7. Inicie a aplicação:
+6. Inicie a aplicação:
 
     ```bash
     npm run dev

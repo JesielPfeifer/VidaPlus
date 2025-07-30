@@ -6,7 +6,11 @@ import {
     NOT_FOUND,
     UNPROCESSABLE_CONTENT,
 } from '../constants/httpCodes.constant';
-import { PrismaClient } from '@prisma/client';
+import {
+    PrismaClientValidationError,
+    PrismaClientKnownRequestError,
+    PrismaClientInitializationError,
+} from '@prisma/client/runtime/library';
 import { z } from 'zod';
 
 const handleZodError = (res: Response, error: z.ZodError) => {
@@ -33,7 +37,7 @@ const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
         return;
     }
 
-    if (error instanceof PrismaClient.PrismaClientKnownRequestError) {
+    if (error instanceof PrismaClientKnownRequestError) {
         switch (error.code) {
             case 'P2002':
                 res.status(BAD_REQUEST).json({
@@ -54,7 +58,7 @@ const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
         }
     }
 
-    if (error instanceof PrismaClient.PrismaClientValidationError) {
+    if (error instanceof PrismaClientValidationError) {
         if (
             error.message.includes('Argument') &&
             error.message.includes('is missing')
@@ -77,7 +81,7 @@ const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
         return;
     }
 
-    if (error instanceof PrismaClient.PrismaClientInitializationError) {
+    if (error instanceof PrismaClientInitializationError) {
         const errors = error.message.split('\n');
         res.status(500).json({
             error: 'Error during Prisma initialization',

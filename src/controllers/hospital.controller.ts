@@ -83,22 +83,11 @@ export class HospitalController {
 
     public deleteHospitalUnit = catchErrors(
         async (req: Request, res: Response) => {
-            const request = UnidadeSchema.parse(req.body);
+            const hospitalId = req.params.id;
 
-            const hospitaUnit = await this.hospitalService.findByName(
-                request.nome,
-            );
+            const deleteStatus =
+                await this.hospitalService.deleteUnit(hospitalId);
 
-            if (!hospitaUnit) {
-                res.status(BAD_REQUEST).json({
-                    msg: 'Hospital unit does not exists',
-                });
-                return;
-            }
-
-            const deleteStatus = await this.hospitalService.deleteUnit(
-                hospitaUnit.id,
-            );
             if (!deleteStatus) {
                 res.status(BAD_REQUEST).json({
                     msg: 'Failed to delete hospital unit',
@@ -119,6 +108,7 @@ export class HospitalController {
                 res.status(NOT_FOUND).json({
                     msg: 'There are no hospital units registered',
                 });
+                return;
             }
             res.status(OK).json({ hospitalUnits });
         },
