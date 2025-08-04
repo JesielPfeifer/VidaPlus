@@ -6,36 +6,36 @@ Sistema de Gestão Hospitalar e de Serviços de Saúde (SGHSS) para a instituiç
 
 - **Cadastro e Atendimento de Pacientes:**
 
-  - Cadastro de pacientes
-  - Visualização de histórico clínico
-  - Agendamento/cancelamento de consultas
-  - Prontuários e exames
-  - Teleconsulta
+    - Cadastro de pacientes
+    - Visualização de histórico clínico
+    - Agendamento/cancelamento de consultas
+    - Prontuários e exames
+    - Teleconsulta
 
 - **Gestão de Profissionais de Saúde:**
 
-  - Cadastro de médicos, enfermeiros e técnicos
-  - Gerenciamento de agendas
-  - Atualização de prontuários
-  - Emissão de receitas digitais
+    - Cadastro de médicos, enfermeiros e técnicos
+    - Gerenciamento de agendas
+    - Atualização de prontuários
+    - Emissão de receitas digitais
 
 - **Administração Hospitalar:**
 
-  - Gerenciamento de leitos
-  - Relatórios financeiros
-  - Controle de suprimentos
+    - Gerenciamento de leitos
+    - Relatórios financeiros
+    - Controle de suprimentos
 
 - **Telemedicina:**
 
-  - Atendimentos e prescrições online
-  - Marcação de consultas/exames presenciais
-  - Videochamadas seguras
+    - Atendimentos e prescrições online
+    - Marcação de consultas/exames presenciais
+    - Videochamadas seguras
 
 - **Segurança e Compliance:**
-  - Controle de acesso por perfil
-  - Criptografia de dados sensíveis
-  - Registro de logs e auditoria
-  - Conformidade com a LGPD
+    - Controle de acesso por perfil
+    - Criptografia de dados sensíveis
+    - Registro de logs e auditoria
+    - Conformidade com a LGPD
 
 ## Tecnologias
 
@@ -47,11 +47,19 @@ Sistema de Gestão Hospitalar e de Serviços de Saúde (SGHSS) para a instituiç
 
 ## Como rodar o projeto
 
+### Pré-requisitos
+
+- [NodeJS v22.17.1](https://nodejs.org/dist/v22.18.0/node-v22.18.0-x64.msi)
+- [VSCode](https://code.visualstudio.com)
+- [GIT](https://git-scm.com/downloads)
+
 1. Clone o repositório
 
     ```git
     git clone https://github.com/JesielPfeifer/VidaPlus.git
     ```
+
+> OBS: Após baixar os programas de pré-requisito, você pode instalar a aplicação de forma automatizada basta executar o script install-app-windows.bat (para Windows) ou install-app.sh (Unix)
 
 2. Instale as dependências:
 
@@ -77,7 +85,13 @@ Sistema de Gestão Hospitalar e de Serviços de Saúde (SGHSS) para a instituiç
     npx prisma migrate deploy
     ```
 
-6. Inicie a aplicação:
+6. (Opcional) Popule o banco com dados iniciais
+
+    ```bash
+    npx prisma db seed
+    ```
+
+7. Inicie a aplicação:
 
     ```bash
     npm run dev

@@ -9,6 +9,9 @@
         "lint": "eslint . --ext .ts",
         "format": "prettier --write ."
     },
+    "prisma": {
+        "seed": "tsx prisma/seed.ts"
+    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/JesielPfeifer/VidaPlus.git"
