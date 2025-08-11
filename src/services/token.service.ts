@@ -1,17 +1,18 @@
 import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from '../constants/envs.constant';
 
-export class Token {
-    private static SECRET = process.env.SECRET || 'minha-chave-secreta';
-
-    public createToken = (req: any): string => {
-        return jwt.sign(req, Token.SECRET, {
-            expiresIn: '1h',
-        });
+export class TokenService {
+    public signJwt = (
+        payload: object,
+        secret: string = JWT_SECRET,
+        options?: object,
+    ): string => {
+        return jwt.sign(payload, secret, options);
     };
 
     public validateToken = (token: string): any => {
         try {
-            return jwt.verify(token, Token.SECRET);
+            return jwt.verify(token, JWT_SECRET);
         } catch (error) {
             return null;
         }

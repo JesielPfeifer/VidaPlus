@@ -34,7 +34,7 @@ app.use('/pacientes', patientRouter);
 app.use('/hospital', hospitalRouter);
 app.use('/profissional', professionalRouter);
 app.use('/consulta', appointmentRouter);
-app.use('/admin', checkingAuth, adminRouter);
+app.use('/admin', adminRouter);
 // app.use('/medicos');
 
 app.use(errorHandler);

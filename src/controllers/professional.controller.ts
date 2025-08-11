@@ -55,7 +55,6 @@ export class ProfessionalController {
 
             res.status(CREATED).json({
                 msg: 'Professional registered successfully',
-                profissional,
             });
             return;
         },

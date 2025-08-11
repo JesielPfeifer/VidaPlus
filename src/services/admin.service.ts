@@ -1,4 +1,5 @@
 import { prisma } from '../lib/prisma';
+import { comparePasswords } from '../utils/bcrypt.util';
 
 export class AdminService {
     constructor() {}
@@ -6,15 +7,22 @@ export class AdminService {
     public async getAdminByEmail(email: string) {
         const admin = await prisma.usuario_admin.findUnique({
             where: { email },
+            omit: { senha: true },
         });
         return admin ? admin : null;
     }
+    public async isValidPassword(email: string, password: string) {
+        const admin = await prisma.usuario_admin.findUnique({
+            where: { email },
+        });
+        if (!admin) return false;
+
+        const isValid = await comparePasswords(password, admin.senha);
+        return isValid;
+    }
 
     public async createAdmin(data: any) {
-        return await prisma.usuario_admin.create({
-            data,
-            omit: { senha: true },
-        });
+        return await prisma.usuario_admin.create({ data });
     }
 
     public async updateAdmin(id: string, data: any) {

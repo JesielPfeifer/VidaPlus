@@ -61,8 +61,7 @@ if /i "%SEED_CHOICE%"=="s" (
     echo.
     echo [5/6] Populando banco de dados com dados iniciais...
     npx prisma db seed >> first-run-bat.log 2>&1
-    set SEED_ERROR=%ERRORLEVEL%
-    if !SEED_ERROR! EQU 0 (
+    if %ERRORLEVEL% EQU 0 (
         echo [OK] Banco populado com sucesso.
     ) else (
         echo [ERRO] Falha ao popular o banco. Verifique o arquivo first-run-bat.log.

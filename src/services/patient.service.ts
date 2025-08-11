@@ -11,6 +11,12 @@ export class PatientService {
     public async findByCpf(cpf: string) {
         const patientData = await prisma.paciente.findUnique({
             where: { cpf },
+            omit: {
+                id: true,
+                unidadeId: true,
+                createdAt: true,
+                updatedAt: true,
+            },
         });
         return patientData ? patientData : null;
     }

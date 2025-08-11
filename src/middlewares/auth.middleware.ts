@@ -1,11 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
-import { Token } from '../services/token.service';
+import { TokenService } from '../services/token.service';
 
 export const checkingAuth = (
     req: Request,
     res: Response,
     next: NextFunction,
 ) => {
+    const validator = new TokenService();
+
     try {
         const authHeader = req.headers.authorization;
         const token = authHeader?.split(' ')[1];
@@ -19,7 +21,8 @@ export const checkingAuth = (
             return;
         }
 
-        const payload = new Token().validateToken(token);
+        const payload = validator.validateToken(token);
+        console.log(payload);
         if (!payload || !payload.id) {
             res.status(401).json({ msg: 'Não autorizado' });
             return;

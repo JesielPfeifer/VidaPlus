@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import prisma from '../lib/prisma';
 import catchErrors from '../utils/catchError';
 import {
     BAD_REQUEST,
@@ -15,12 +14,10 @@ import { AppointmentService } from '../services/appointment.service';
 export class PatientController {
     private patientService: PatientService;
     private hospitalService: HospitalService;
-    private appointmentsService: AppointmentService;
 
     constructor() {
         this.patientService = new PatientService();
         this.hospitalService = new HospitalService();
-        this.appointmentsService = new AppointmentService();
     }
 
     /**
@@ -124,6 +121,24 @@ export class PatientController {
         }
 
         res.status(OK).json({ msg: 'Patient deleted successfully' });
+        return;
+    });
+    /**
+     * Get a patient's data by their CPF.
+     * @param req - The request object containing the patient's CPF.
+     * @returns A JSON response with the patient's data or an error message.
+     */
+    public getPatientData = catchErrors(async (req: Request, res: Response) => {
+        const patientCpf = req.body.cpf;
+
+        const patient = await this.patientService.findByCpf(patientCpf);
+
+        if (!patient) {
+            res.status(NOT_FOUND).json({ msg: 'Patient not found' });
+            return;
+        }
+
+        res.status(OK).json({ ...patient });
         return;
     });
 }

@@ -6,5 +6,5 @@ export const hospitalRouter = express.Router();
 
 hospitalRouter.post('/', hospitalController.createHospitalUnit);
 hospitalRouter.put('/', hospitalController.updateHospitalUnit);
-hospitalRouter.delete('/', hospitalController.deleteHospitalUnit);
+hospitalRouter.delete('/:id', hospitalController.deleteHospitalUnit);
 hospitalRouter.get('/', hospitalController.getHospitalUnits);

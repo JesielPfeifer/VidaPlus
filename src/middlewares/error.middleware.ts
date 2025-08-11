@@ -44,6 +44,11 @@ const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
                     error: `${error.meta?.target} is already registered`,
                 });
                 return;
+            case 'P2003':
+                res.status(BAD_REQUEST).json({
+                    error: 'Foreign key constraint failed',
+                });
+                return;
             case 'P2025':
                 res.status(NOT_FOUND).json({
                     error: 'Register not found',
