@@ -79,8 +79,9 @@ export class HospitalService {
         return !!hospitalUnit;
     }
 
-    public async getHospitalBeds() {
+    public async getHospitalBeds(hospitalId: string) {
         return await prisma.internacao.findMany({
+            where: { unidadeId: hospitalId },
             include: {
                 unidade: true,
                 paciente: true,

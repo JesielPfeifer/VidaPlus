@@ -11,5 +11,19 @@ services:
             - '5432:5432'
         volumes:
             - postgres-data:/var/lib/postgresql/data
+    app:
+        container_name: vidaplus-app
+        restart: always
+        working_dir: /app
+        volumes:
+            - .:/app
+        build:
+            context: .
+        ports:
+            - '3333:3333'
+        environment:
+            - DATABASE_URL=postgresql://admin:root@db:5432/sghss?schema=vidaplus&connection_limit=5&socket_timeout=3
+            - JWT_SECRET=default_jwt_secret
+        command: sh -c "npm install && npm run dev"
 volumes:
     postgres-data:

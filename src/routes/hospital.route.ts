@@ -26,7 +26,7 @@ hospitalRouter.get(
     hospitalController.getHospitalUnits,
 );
 hospitalRouter.get(
-    '/leitos',
+    '/leitos/:id',
     checkingAuth(['Administrador']),
     hospitalController.getHospitalBeds,
 );

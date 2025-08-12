@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import prisma from '../lib/prisma';
 import catchErrors from '../utils/catchError';
 import { HospitalService } from '../services/hospital.service';
 import {
@@ -116,11 +115,13 @@ export class HospitalController {
 
     public getHospitalBeds = catchErrors(
         async (req: Request, res: Response) => {
-            const hospitalBeds = await this.hospitalService.getHospitalBeds();
+            const hospitalId = req.params.id;
+
+            const hospitalBeds = await this.hospitalService.getHospitalBeds(hospitalId);
 
             if (!hospitalBeds || hospitalBeds.length === 0) {
                 res.status(NOT_FOUND).json({
-                    msg: 'There are no hospital beds registered',
+                    msg: 'There are no hospaaital beds registered',
                 });
                 return;
             }

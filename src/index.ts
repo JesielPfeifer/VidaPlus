@@ -11,6 +11,7 @@ import { appointmentRouter } from './routes/appointment.route';
 import { adminRouter } from './routes/admin.route';
 import { prescriptionRouter } from './routes/prescription.route';
 import { reportRouter } from './routes/report.route';
+import logger from './lib/logger';
 
 const app = express();
 
@@ -44,5 +45,6 @@ app.use('/prontuario', reportRouter);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
+    logger.info(`Aplication Started. Server is running on port ${PORT}`);
     console.log(`Server running on ${PORT}`);
 });
