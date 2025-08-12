@@ -62,6 +62,14 @@ export class AppointmentController {
                     message: 'Invalid data provided.',
                 });
             }
+
+            console.log('Creating appointment with data:', {
+                pacienteId,
+                profissionalId,
+                unidadeId,
+                ...params,
+            });
+
             const appointment =
                 await this.appointmentService.registerAppointment({
                     pacienteId,
@@ -69,6 +77,24 @@ export class AppointmentController {
                     unidadeId,
                     ...params,
                 });
+
+            if (!appointment) {
+                return res.status(BAD_REQUEST).json({
+                    message: 'Failed to register appointment',
+                });
+            } else {
+                const calendarAppointment =
+                    await this.appointmentService.registerCalendarAppointment({
+                        dataHora: appointment.data,
+                        pacienteId,
+                        profissionalId,
+                        tipo: appointment.tipo,
+                        status: appointment.status,
+                    });
+                if (!calendarAppointment) {
+                    console.log('Failed to create calendar appointment');
+                }
+            }
 
             return res.status(CREATED).json({
                 ...appointment,

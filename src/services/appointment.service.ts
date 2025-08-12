@@ -75,4 +75,8 @@ export class AppointmentService {
         });
         return !!appointment;
     }
+
+    public async registerCalendarAppointment(data: any) {
+        return await prisma.agenda.create({ data });
+    }
 }
