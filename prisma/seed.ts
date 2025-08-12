@@ -72,7 +72,7 @@ async function main() {
             pacienteId: PACIENTE_ID,
             unidadeId: UNIDADE_ID,
             leito: 'A1',
-            status: 'Em Internação',
+            status: 'Internado',
             dataEntrada: new Date('2023-01-01'),
             dataSaida: new Date('2023-01-10'),
         },

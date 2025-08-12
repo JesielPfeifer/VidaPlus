@@ -6,6 +6,14 @@ const adminController = new AdminController();
 export const adminRouter = express.Router();
 
 adminRouter.post('/register', adminController.register);
-adminRouter.post('/login', checkingAuth, adminController.login);
-adminRouter.delete('/:id', adminController.deleteAdmin);
-adminRouter.get('/', adminController.getAdminData);
+adminRouter.post('/login', adminController.login);
+adminRouter.delete(
+    '/:id',
+    checkingAuth(['Administrador']),
+    adminController.deleteAdmin,
+);
+adminRouter.get(
+    '/',
+    checkingAuth(['Administrador']),
+    adminController.getAdminData,
+);

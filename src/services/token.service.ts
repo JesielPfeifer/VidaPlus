@@ -14,7 +14,8 @@ export class TokenService {
         try {
             return jwt.verify(token, JWT_SECRET);
         } catch (error) {
-            return null;
+            return console.error('Invalid token', error);
         }
     };
 }
+    

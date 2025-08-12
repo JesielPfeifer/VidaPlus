@@ -102,7 +102,6 @@ export class AdminController {
 
         res.status(OK).json({
             msg: 'Admin logged in successfully',
-            usuario: adminUser,
             token,
         });
     });

@@ -6,7 +6,7 @@ import {
     NOT_FOUND,
     OK,
 } from '../constants/httpCodes.constant';
-import { PacienteSchema } from '../schemas/schema';
+import { InternacaoSchema, PacienteSchema } from '../schemas/schema';
 import { PatientService } from '../services/patient.service';
 import { HospitalService } from '../services/hospital.service';
 import { AppointmentService } from '../services/appointment.service';
@@ -141,4 +141,36 @@ export class PatientController {
         res.status(OK).json({ ...patient });
         return;
     });
+
+    public registerPatientHospitalization = catchErrors(
+        async (req: Request, res: Response) => {
+            const request = InternacaoSchema.parse(req.body);
+            const { dataEntrada, dataSaida } = request;
+
+            const patient = await this.patientService.findPatientById(
+                request.pacienteId,
+            );
+            if (!patient) {
+                res.status(NOT_FOUND).json({ msg: 'Patient not found' });
+                return;
+            }
+
+            const hospitalUnit = await this.hospitalService.findById(
+                request.unidadeId,
+            );
+            if (!hospitalUnit) {
+                res.status(NOT_FOUND).json({ msg: 'Hospital unit not found' });
+                return;
+            }
+
+            const hospitalization =
+                await this.patientService.registerHospitalization({
+                    ...request,
+                    dataEntrada: new Date(dataEntrada),
+                    dataSaida: dataSaida ? new Date(dataSaida) : null,
+                });
+
+            res.status(CREATED).json(hospitalization);
+        },
+    );
 }

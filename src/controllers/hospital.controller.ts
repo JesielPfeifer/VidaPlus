@@ -113,4 +113,21 @@ export class HospitalController {
             res.status(OK).json({ hospitalUnits });
         },
     );
+
+    public getHospitalBeds = catchErrors(
+        async (req: Request, res: Response) => {
+            const hospitalBeds = await this.hospitalService.getHospitalBeds();
+
+            if (!hospitalBeds || hospitalBeds.length === 0) {
+                res.status(NOT_FOUND).json({
+                    msg: 'There are no hospital beds registered',
+                });
+                return;
+            }
+
+            const totalBedsUsed = hospitalBeds.length;
+
+            res.status(OK).json({ totalBedsUsed: totalBedsUsed, hospitalBeds });
+        },
+    );
 }

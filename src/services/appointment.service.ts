@@ -12,6 +12,9 @@ export class AppointmentService {
         const patientAppointments = await prisma.consulta.findMany({
             where: { pacienteId },
             orderBy: { data: 'desc' },
+            include: {
+                prontuario: true,
+            },
         });
         return patientAppointments.length > 0 ? patientAppointments : [];
     }
@@ -64,5 +67,12 @@ export class AppointmentService {
      */
     public async findAppointmentById(id: string) {
         return await prisma.consulta.findUnique({ where: { id } });
+    }
+
+    public async existsAppointment(id: string) {
+        const appointment = await prisma.consulta.findUnique({
+            where: { id },
+        });
+        return !!appointment;
     }
 }

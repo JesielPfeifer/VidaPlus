@@ -78,4 +78,13 @@ export class HospitalService {
         const hospitalUnit = await prisma.unidade.findUnique({ where: { id } });
         return !!hospitalUnit;
     }
+
+    public async getHospitalBeds() {
+        return await prisma.internacao.findMany({
+            include: {
+                unidade: true,
+                paciente: true,
+            },
+        });
+    }
 }

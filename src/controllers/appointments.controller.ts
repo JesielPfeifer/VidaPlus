@@ -71,8 +71,7 @@ export class AppointmentController {
                 });
 
             return res.status(CREATED).json({
-                message: 'Appointment registered successfully.',
-                appointment,
+                ...appointment,
             });
         },
     );
@@ -114,7 +113,6 @@ export class AppointmentController {
 
             return res.status(OK).json({
                 message: 'Appointment updated successfully.',
-                appointment: updatedAppointment,
             });
         },
     );

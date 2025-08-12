@@ -12,7 +12,6 @@ export class PatientService {
         const patientData = await prisma.paciente.findUnique({
             where: { cpf },
             omit: {
-                id: true,
                 unidadeId: true,
                 createdAt: true,
                 updatedAt: true,
@@ -82,5 +81,9 @@ export class PatientService {
         return await prisma.paciente.delete({
             where: { id },
         });
+    }
+
+    public async registerHospitalization(data: any) {
+        return await prisma.internacao.create({ data });
     }
 }

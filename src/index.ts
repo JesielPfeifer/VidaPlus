@@ -9,13 +9,14 @@ import { hospitalRouter } from './routes/hospital.route';
 import { professionalRouter } from './routes/professional.route';
 import { appointmentRouter } from './routes/appointment.route';
 import { adminRouter } from './routes/admin.route';
-import { checkingAuth } from './middlewares/auth.middleware';
+import { prescriptionRouter } from './routes/prescription.route';
+import { reportRouter } from './routes/report.route';
 
 const app = express();
 
 app.use(express.json());
 
-app.get('/', async (req, res) => {
+app.get('/', async (_, res) => {
     try {
         await prisma.$queryRaw`SELECT 1`;
         res.status(200).json({
@@ -30,12 +31,15 @@ app.get('/', async (req, res) => {
     }
 });
 
+// #TODO: Criar um arquivo de chamada de todas as rotas com as criações dos dados no banco
+
 app.use('/pacientes', patientRouter);
 app.use('/hospital', hospitalRouter);
 app.use('/profissional', professionalRouter);
 app.use('/consulta', appointmentRouter);
 app.use('/admin', adminRouter);
-// app.use('/medicos');
+app.use('/prescricao', prescriptionRouter);
+app.use('/prontuario', reportRouter);
 
 app.use(errorHandler);
 
