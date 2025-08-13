@@ -16,7 +16,7 @@ patientRouter.post(
     patientController.registerPatientHospitalization,
 );
 patientRouter.put(
-    '/',
+    '/:id',
     checkingAuth(['Administrador', 'Usuario']),
     patientController.updateInfos,
 );

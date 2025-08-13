@@ -35,8 +35,8 @@ export class PatientService {
      * @param data - The updated patient data.
      * @returns The updated patient data.
      */
-    public async updatePatientData(cpf: string, data: any) {
-        return await prisma.paciente.update({ where: { cpf }, data });
+    public async updatePatientData(id: string, data: any) {
+        return await prisma.paciente.update({ where: { id }, data });
     }
 
     /**

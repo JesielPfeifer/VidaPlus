@@ -11,7 +11,7 @@ hospitalRouter.post(
     hospitalController.createHospitalUnit,
 );
 hospitalRouter.put(
-    '/',
+    '/:id',
     checkingAuth(['Administrador']),
     hospitalController.updateHospitalUnit,
 );

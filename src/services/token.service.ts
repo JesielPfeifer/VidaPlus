@@ -15,6 +15,10 @@ export class TokenService {
         try {
             return jwt.verify(token, JWT_SECRET);
         } catch (error: any) {
+            if (error.name === 'TokenExpiredError') {
+                logger.error('Token expired');
+                return { expired: true}
+            }
             logger.error(`Invalid token: ${error.message.trim()}`);
             return null;
         }

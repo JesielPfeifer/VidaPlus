@@ -22,19 +22,29 @@ export const checkingAuth = (cargo: string[]) => {
             }
 
             const payload = validator.validateToken(token);
+            
+            if (payload && payload.expired) {
+                res.status(401).json({ msg: 'Session expired. Please log in again.' });
+                return;
+            }
+
             if (
                 !payload ||
                 !payload.id ||
                 !payload.cargo ||
                 !cargo.includes(payload.cargo)
             ) {
-                logger.error('Usuário não autorizado');
+                const payloadStatus = {
+                    id: payload.id,
+                    cargo: payload.cargo
+                }
+                logger.error(`Usuário não autorizado. ${ JSON.stringify(payloadStatus) }`);
                 res.status(401).json({ msg: 'Não autorizado' });
                 return;
             }
             next();
         } catch (error: any) {
-            logger.error(`Erro ao validar token: ${error.message}`);
+            logger.error(`Erro ao validar token: ${error}`);
             res.status(500).json({ msg: 'Erro interno no servidor' });
             return;
         }

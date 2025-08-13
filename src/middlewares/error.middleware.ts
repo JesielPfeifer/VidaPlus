@@ -59,7 +59,7 @@ const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
                 return;
             case 'P2003':
                 logger.error(
-                    `Foreign key constraint failed: ${error.meta?.target}`,
+                    `Foreign key constraint failed: ${error}`,
                 );
                 res.status(BAD_REQUEST).json({
                     error: 'Foreign key constraint failed',

@@ -72,26 +72,28 @@ export class PatientController {
      * @returns A JSON response with the updated patient information or an error message.
      */
     public updateInfos = catchErrors(async (req: Request, res: Response) => {
+        const patientId = req.params.id;
         const request = PacienteSchema.parse(req.body);
-        const { cpf, nome, email } = request;
+        const { cpf,unidadeId, ...patientData } = request;
 
-        const patient = await this.patientService.findByCpf(cpf);
+        const patient = await this.patientService.findPatientById(patientId);
 
         if (!patient) {
-            logger.error(`Patient not found: ${cpf}`);
+            logger.error(`Patient not found: ${patientId}`);
             res.status(NOT_FOUND).json({ msg: 'Patient not found' });
             return;
         }
 
+        logger.debug(`Updating patient information: ${cpf} with data: ${JSON.stringify({
+            ...patientData,
+            dataNascimento: new Date(request.dataNascimento),
+        })}`);
+
         const updatedPatient = await this.patientService.updatePatientData(
-            cpf,
+            patientId,
             {
-                ...request,
-                nome,
-                email,
-                telefone: request.telefone,
+                ...patientData,
                 dataNascimento: new Date(request.dataNascimento),
-                genero: request.genero,
             },
         );
 

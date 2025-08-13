@@ -68,7 +68,7 @@ export class AdminController {
         }
 
         const token = this.tokenService.signJwt(
-            { id: newAdmin.id },
+            { id: newAdmin.id, cargo: newAdmin.perfil },
             JWT_SECRET,
             { expiresIn: '1h' },
         );

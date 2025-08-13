@@ -49,10 +49,11 @@ export class HospitalController {
      */
     public updateHospitalUnit = catchErrors(
         async (req: Request, res: Response) => {
+            const hospitalId = req.params.id;
             const request = UnidadeSchema.parse(req.body);
 
-            const hospitalUnit = await this.hospitalService.findByName(
-                request.nome,
+            const hospitalUnit = await this.hospitalService.findById(
+                hospitalId,
             );
 
             if (!hospitalUnit) {
@@ -149,7 +150,7 @@ export class HospitalController {
 
             const totalBedsUsed = hospitalBeds.length;
             logger.info(
-                `Total beds used in hospital ${hospitalId}: ${totalBedsUsed}`,
+                `${totalBedsUsed} beds used in hospital ${hospitalBeds[0].unidade.nome}: `,
             );
             res.status(OK).json({ totalBedsUsed: totalBedsUsed, hospitalBeds });
         },
