@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import logger from '../lib/logger';
 
 type AsyncController = (
     req: Request,
@@ -9,6 +10,7 @@ type AsyncController = (
 const catchErrors =
     (controller: AsyncController): AsyncController =>
     async (req, res, next) => {
+        logger.info(`Handling request for ${req.method} ${req.originalUrl}`);
         try {
             await controller(req, res, next);
         } catch (error) {

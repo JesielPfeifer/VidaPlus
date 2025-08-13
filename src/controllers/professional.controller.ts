@@ -6,22 +6,17 @@ import {
     NOT_FOUND,
     OK,
 } from '../constants/httpCodes.constant';
-import { PatientService } from '../services/patient.service';
 import { HospitalService } from '../services/hospital.service';
-import { AppointmentService } from '../services/appointment.service';
 import { ProfissionalSchema } from '../schemas/schema';
 import { ProfessionalService } from '../services/professional.service';
+import logger from '../lib/logger';
 
 export class ProfessionalController {
-    private patientService: PatientService;
     private hospitalService: HospitalService;
-    private appointmentsService: AppointmentService;
     private professionalService: ProfessionalService;
 
     constructor() {
-        this.patientService = new PatientService();
         this.hospitalService = new HospitalService();
-        this.appointmentsService = new AppointmentService();
         this.professionalService = new ProfessionalService();
     }
 
@@ -40,6 +35,7 @@ export class ProfessionalController {
             );
 
             if (!hospitalUnit) {
+                logger.error(`Hospital unit not found: ${request.unidadeId}`);
                 res.status(NOT_FOUND).json({ msg: 'Hospital unit not found' });
                 return;
             }
@@ -47,12 +43,20 @@ export class ProfessionalController {
                 await this.professionalService.registerProfessional(request);
 
             if (!profissional) {
+                logger.error(
+                    `Error registering professional: ${JSON.stringify(
+                        request,
+                    )}`,
+                );
                 res.status(BAD_REQUEST).json({
                     msg: 'Error registering professional',
                 });
                 return;
             }
 
+            logger.info(
+                `Professional registered successfully: ${profissional}`,
+            );
             res.status(CREATED).json({
                 msg: 'Professional registered successfully',
             });
@@ -76,9 +80,11 @@ export class ProfessionalController {
                 );
 
             if (!professionalData) {
+                logger.error(`Professional not found: ${req.params.id}`);
                 res.status(NOT_FOUND).json({ msg: 'Professional not found' });
                 return;
             }
+
             const updatedProfessional =
                 await this.professionalService.updateProfessionalData(
                     professionalData.id,
@@ -86,11 +92,20 @@ export class ProfessionalController {
                 );
 
             if (!updatedProfessional) {
+                logger.error(
+                    `Error updating professional data: ${JSON.stringify(
+                        request,
+                    )}`,
+                );
                 res.status(BAD_REQUEST).json({
                     msg: 'Error updating professional data',
                 });
                 return;
             }
+
+            logger.info(
+                `Professional data updated successfully: ${updatedProfessional}`,
+            );
             res.status(OK).json({
                 msg: 'Professional data updated successfully',
                 updatedProfessional,
@@ -113,9 +128,12 @@ export class ProfessionalController {
                 );
 
             if (!professionalData) {
+                logger.error(`Professional not found: ${req.params.id}`);
                 res.status(NOT_FOUND).json({ msg: 'Professional not found' });
                 return;
             }
+
+            logger.info(`Professional data retrieved successfully`);
             res.status(OK).json(professionalData);
             return;
         },
@@ -134,6 +152,7 @@ export class ProfessionalController {
             const hospitalUnit = await this.hospitalService.findById(unidadeId);
 
             if (!hospitalUnit) {
+                logger.error(`Hospital unit not found: ${unidadeId}`);
                 res.status(NOT_FOUND).json({ msg: 'Hospital unit not found' });
                 return;
             }
@@ -144,10 +163,16 @@ export class ProfessionalController {
                 );
 
             if (!allProfessionals) {
+                logger.error(
+                    `No professionals found for hospital unit: ${unidadeId}`,
+                );
                 res.status(NOT_FOUND).json({ msg: 'Professional not found' });
                 return;
             }
 
+            logger.info(
+                `Total professionals found for hospital unit ${hospitalUnit.nome}: ${allProfessionals.length}`,
+            );
             res.status(OK).json(allProfessionals);
             return;
         },
@@ -169,6 +194,7 @@ export class ProfessionalController {
                 );
 
             if (!professionalData) {
+                logger.error(`Professional not found: ${professionalId}`);
                 res.status(NOT_FOUND).json({ msg: 'Professional not found' });
                 return;
             }
@@ -177,6 +203,7 @@ export class ProfessionalController {
                 professionalData.id,
             );
 
+            logger.info(`Professional deleted successfully: ${professionalId}`);
             res.status(OK).json({
                 msg: 'Professional deleted successfully',
             });

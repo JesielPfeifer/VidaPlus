@@ -25,11 +25,13 @@ export class AppointmentService {
      * @returns An array of appointments for the professional or an empty array if none found.
      */
     public async getAppointmentsByProfessionalId(professionalId: string) {
-        const patientAppointments = await prisma.consulta.findMany({
+        const professionalAppointments = await prisma.consulta.findMany({
             where: { profissionalId: professionalId },
             orderBy: { data: 'desc' },
         });
-        return patientAppointments.length > 0 ? patientAppointments : [];
+        return professionalAppointments.length > 0
+            ? professionalAppointments
+            : [];
     }
 
     /**
@@ -78,5 +80,39 @@ export class AppointmentService {
 
     public async registerCalendarAppointment(data: any) {
         return await prisma.agenda.create({ data });
+    }
+
+    public async registerTelemedicina(data: any) {
+        return await prisma.telemedicina.create({ data });
+    }
+
+    public async updateCalendarAppointment(id: string, data: any) {
+        return await prisma.agenda.update({ where: { id }, data });
+    }
+
+    public async updateTelemedicina(id: string, data: any) {
+        return await prisma.telemedicina.update({ where: { id }, data });
+    }
+
+    public async deleteCalendarAppointment(id: string) {
+        return await prisma.agenda.delete({ where: { id } });
+    }
+
+    public async deleteTelemedicina(id: string) {
+        return await prisma.telemedicina.delete({ where: { id } });
+    }
+
+    public async hasCalendarAppointment(appointmentId: string) {
+        const calendarAppointment = await prisma.agenda.findFirst({
+            where: { id: appointmentId },
+        });
+        return !!calendarAppointment;
+    }
+
+    public async hasTelemedicina(appointmentId: string) {
+        const telemedicina = await prisma.telemedicina.findFirst({
+            where: { id: appointmentId },
+        });
+        return !!telemedicina;
     }
 }

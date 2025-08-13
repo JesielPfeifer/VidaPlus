@@ -8,6 +8,7 @@ import {
     OK,
 } from '../constants/httpCodes.constant';
 import { UnidadeSchema } from '../schemas/schema';
+import logger from '../lib/logger';
 
 export class HospitalController {
     private hospitalService: HospitalService;
@@ -24,6 +25,7 @@ export class HospitalController {
                 await this.hospitalService.hospitalUnitNameInUse(request.nome);
 
             if (existingHospitalUnit) {
+                logger.error(`Hospital unit already exists: ${request.nome}`);
                 res.status(BAD_REQUEST).json({
                     msg: 'Hospital unit already exists',
                 });
@@ -32,6 +34,7 @@ export class HospitalController {
 
             const hospital = await this.hospitalService.createUnit(request);
 
+            logger.info(`Hospital unit created successfully: ${hospital}`);
             res.status(CREATED).json(hospital);
             return;
         },
@@ -53,6 +56,9 @@ export class HospitalController {
             );
 
             if (!hospitalUnit) {
+                logger.error(
+                    `Hospital unit not found for update: ${request.nome}`,
+                );
                 res.status(NOT_FOUND).json({ msg: 'Hospital unit not found' });
                 return;
             }
@@ -61,6 +67,9 @@ export class HospitalController {
                 hospitalUnit.endereco === request.endereco &&
                 hospitalUnit.nome === request.nome
             ) {
+                logger.info(
+                    `No changes detected for hospital unit: ${request.nome}`,
+                );
                 res.status(200).json({
                     msg: 'No changes detected for the hospital unit',
                 });
@@ -75,6 +84,7 @@ export class HospitalController {
                 },
             );
 
+            logger.info(`Hospital unit updated successfully: ${request.nome}`);
             res.json(updatedHospitalUnit);
             return;
         },
@@ -88,11 +98,14 @@ export class HospitalController {
                 await this.hospitalService.deleteUnit(hospitalId);
 
             if (!deleteStatus) {
+                logger.error(`Failed to delete hospital unit: ${hospitalId}`);
                 res.status(BAD_REQUEST).json({
                     msg: 'Failed to delete hospital unit',
                 });
                 return;
             }
+
+            logger.info(`Hospital unit deleted successfully: ${hospitalId}`);
             res.status(200).json({
                 msg: 'Hospital unit deleted successfully',
             });
@@ -104,11 +117,15 @@ export class HospitalController {
             const hospitalUnits = await this.hospitalService.findAllUnits();
 
             if (!hospitalUnits || hospitalUnits.length === 0) {
+                logger.info('No hospital units found');
                 res.status(NOT_FOUND).json({
                     msg: 'There are no hospital units registered',
                 });
                 return;
             }
+            logger.info(
+                `Total hospital units found: ${hospitalUnits.length}. Hospital data: ${JSON.stringify(hospitalUnits)}`,
+            );
             res.status(OK).json({ hospitalUnits });
         },
     );
@@ -117,17 +134,23 @@ export class HospitalController {
         async (req: Request, res: Response) => {
             const hospitalId = req.params.id;
 
-            const hospitalBeds = await this.hospitalService.getHospitalBeds(hospitalId);
+            const hospitalBeds =
+                await this.hospitalService.getHospitalBeds(hospitalId);
 
             if (!hospitalBeds || hospitalBeds.length === 0) {
+                logger.info(
+                    `No hospital beds found for hospital: ${hospitalId}`,
+                );
                 res.status(NOT_FOUND).json({
-                    msg: 'There are no hospaaital beds registered',
+                    msg: 'There are no hospital beds registered',
                 });
                 return;
             }
 
             const totalBedsUsed = hospitalBeds.length;
-
+            logger.info(
+                `Total beds used in hospital ${hospitalId}: ${totalBedsUsed}`,
+            );
             res.status(OK).json({ totalBedsUsed: totalBedsUsed, hospitalBeds });
         },
     );

@@ -13,16 +13,15 @@ import {
     NOT_FOUND,
     OK,
 } from '../constants/httpCodes.constant';
+import logger from '../lib/logger';
 
 export class ReportController {
-    private prescriptionService: PrescriptionService;
     private reportService: ReportsService;
     private patientService: PatientService;
     private professionalService: ProfessionalService;
     private appointmentService: AppointmentService;
 
     constructor() {
-        this.prescriptionService = new PrescriptionService();
         this.reportService = new ReportsService();
         this.patientService = new PatientService();
         this.professionalService = new ProfessionalService();
@@ -41,7 +40,18 @@ export class ReportController {
         const professionalExists =
             await this.professionalService.existsProfessional(profissionalId);
 
-        return patientExists && appointmentExists && professionalExists;
+        const isValidReportData = {
+            status: patientExists && appointmentExists && professionalExists,
+            pacienteId: patientExists,
+            profissionalId: professionalExists,
+            consultaId: appointmentExists,
+        };
+
+        logger.debug(
+            `Appointment data is ${isValidReportData.status ? 'valid' : 'invalid'}: ${JSON.stringify(isValidReportData)}`,
+        );
+
+        return isValidReportData.status;
     }
 
     /**
@@ -61,6 +71,7 @@ export class ReportController {
         );
 
         if (!isValid) {
+            logger.error(`Invalid report data: ${JSON.stringify(isValid)}`);
             return res.status(BAD_REQUEST).json({
                 message: 'Invalid data, cannot register report',
             });
@@ -72,11 +83,17 @@ export class ReportController {
         );
 
         if (!report) {
+            logger.error(
+                `Failed to register report: ${JSON.stringify(reportDataParsed)}`,
+            );
             return res.status(BAD_REQUEST).json({
                 message: 'Failed to register report',
             });
         }
 
+        logger.info(
+            `Report registered successfully: ${JSON.stringify(report)}`,
+        );
         return res.status(CREATED).json(report);
     });
 
@@ -92,6 +109,7 @@ export class ReportController {
         );
 
         if (!isValid) {
+            logger.error(`Invalid report data: ${JSON.stringify(isValid)}`);
             return res.status(BAD_REQUEST).json({
                 message: 'Invalid data, cannot update report',
             });
@@ -99,6 +117,7 @@ export class ReportController {
         const existingReport = await this.reportService.existsReport(id);
 
         if (!existingReport) {
+            logger.error(`Report not found for update: ${id}`);
             return res.status(NOT_FOUND).json({
                 message: 'Report does not exist, cannot update report',
             });
@@ -110,11 +129,15 @@ export class ReportController {
         );
 
         if (!updatedReport) {
+            logger.error(`Failed to update report: ${id}`);
             return res.status(BAD_REQUEST).json({
                 message: 'Failed to update report',
             });
         }
 
+        logger.info(
+            `Report updated successfully: ${JSON.stringify(updatedReport)}`,
+        );
         res.status(OK).json(updatedReport);
         return;
     });
@@ -122,25 +145,25 @@ export class ReportController {
     public deleteReport = catchErrors(async (req: Request, res: Response) => {
         const { id } = req.params;
 
-        const existingPrescription =
-            await this.prescriptionService.existsPrescription(id);
+        const existingReport = await this.reportService.existsReport(id);
 
-        if (!existingPrescription) {
+        if (!existingReport) {
+            logger.error(`Report not found for deletion: ${id}`);
             return res.status(NOT_FOUND).json({
-                message: 'Prescription does not exist',
+                message: 'Report does not exist',
             });
         }
+        const deletedReport = await this.reportService.deleteReport(id);
 
-        const deletedPrescription =
-            await this.prescriptionService.deletePrescription(id);
-
-        if (!deletedPrescription) {
+        if (!deletedReport) {
+            logger.error(`Failed to delete report: ${id}`);
             return res.status(BAD_REQUEST).json({
-                message: 'Failed to delete prescription',
+                message: 'Failed to delete report',
             });
         }
 
-        res.status(OK).json(deletedPrescription);
+        logger.info(`Report deleted successfully: ${id}`);
+        res.status(OK).json(deletedReport);
     });
 
     public showPatientsReports = catchErrors(
@@ -151,6 +174,7 @@ export class ReportController {
                 await this.patientService.existsPatient(patientId);
 
             if (!existingPatient) {
+                logger.error(`Patient not found: ${patientId}`);
                 return res.status(NOT_FOUND).json({
                     message: 'Patient not found',
                 });
@@ -159,6 +183,9 @@ export class ReportController {
             const reports =
                 await this.reportService.getPatientReportHistory(patientId);
 
+            logger.info(
+                `Total reports found for patient ${patientId}: ${reports.length}`,
+            );
             res.status(OK).json(reports);
         },
     );

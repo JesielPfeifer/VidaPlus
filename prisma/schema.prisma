@@ -16,7 +16,7 @@ model paciente {
   dataNascimento DateTime
   genero      String
   unidadeId   String
-  unidade     unidade  @relation(fields: [unidadeId], references: [id])
+  unidade     unidade  @relation(fields: [unidadeId], references: [id], onDelete: Cascade)
   consultas   consulta[]
   prontuarios prontuario[]
   internacoes internacao[]
@@ -34,7 +34,7 @@ model profissional {
   cargo          String
   especialidade  String?
   unidadeId      String
-  unidade        unidade  @relation(fields: [unidadeId], references: [id])
+  unidade        unidade  @relation(fields: [unidadeId], references: [id], onDelete: Cascade)
   consultas      consulta[]
   agendas        agenda[]
   prontuarios    prontuario[]
@@ -49,8 +49,8 @@ model agenda {
   status         String    // Ex: "Agendado", "Cancelado", "Concluído"
   pacienteId     String
   profissionalId String
-  paciente       paciente  @relation(fields: [pacienteId], references: [id])
-  profissional   profissional @relation(fields: [profissionalId], references: [id])
+  paciente       paciente  @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  profissional   profissional @relation(fields: [profissionalId], references: [id], onDelete: Cascade)
 }
 
 model consulta {
@@ -65,9 +65,9 @@ model consulta {
   telemedicina   telemedicina?
   prontuario     prontuario?
 
-  paciente       paciente     @relation(fields: [pacienteId], references: [id])
-  profissional   profissional @relation(fields: [profissionalId], references: [id])
-  unidade        unidade      @relation(fields: [unidadeId], references: [id])
+  paciente       paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  profissional   profissional @relation(fields: [profissionalId], references: [id], onDelete: Cascade)
+  unidade        unidade      @relation(fields: [unidadeId], references: [id], onDelete: Cascade)
 }
 
 model telemedicina {
@@ -75,7 +75,7 @@ model telemedicina {
   consultaId  String   @unique
   linkVideo   String
   tokenAcesso String
-  consulta    consulta @relation(fields: [consultaId], references: [id])
+  consulta    consulta @relation(fields: [consultaId], references: [id], onDelete: Cascade)
 }
 
 model prontuario {
@@ -86,9 +86,9 @@ model prontuario {
   descricao      String
   prescricoes    prescricao[]
 
-  consulta       consulta     @relation(fields: [consultaId], references: [id])
-  paciente       paciente     @relation(fields: [pacienteId], references: [id])
-  profissional   profissional @relation(fields: [profissionalId], references: [id])
+  consulta       consulta     @relation(fields: [consultaId], references: [id], onDelete: Cascade)
+  paciente       paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  profissional   profissional @relation(fields: [profissionalId], references: [id], onDelete: Cascade)
 }
 
 model prescricao {
@@ -98,7 +98,7 @@ model prescricao {
   dosagem       String
   observacoes   String?
 
-  prontuario    prontuario @relation(fields: [prontuarioId], references: [id])
+  prontuario    prontuario @relation(fields: [prontuarioId], references: [id], onDelete: Cascade)
 }
 
 model unidade {
@@ -120,8 +120,8 @@ model internacao {
   dataSaida   DateTime?
   status      String
 
-  paciente    paciente @relation(fields: [pacienteId], references: [id])
-  unidade     unidade  @relation(fields: [unidadeId], references: [id])
+  paciente    paciente @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  unidade     unidade  @relation(fields: [unidadeId], references: [id], onDelete: Cascade)
 }
 
 model usuario_admin {

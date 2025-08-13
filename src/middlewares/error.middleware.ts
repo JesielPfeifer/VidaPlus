@@ -13,14 +13,15 @@ import {
 } from '@prisma/client/runtime/library';
 import { z } from 'zod';
 import logger from '../lib/logger';
-import { log } from 'console';
 
 const handleZodError = (res: Response, error: z.ZodError) => {
-    logger.error(`Zod validation error occurred: ${error.issues.map((issue) => ({
-        code: issue.code,
-        path: issue.path.join('.'),
-        message: issue.message,
-    }))}`);
+    logger.error(
+        `Zod validation error occurred: ${error.issues.map((issue) => ({
+            code: issue.code,
+            path: issue.path.join('.'),
+            message: issue.message,
+        }))}`,
+    );
 
     const errors = error.issues.map((issue) => ({
         code: issue.code,
@@ -31,7 +32,9 @@ const handleZodError = (res: Response, error: z.ZodError) => {
 };
 
 const handleAppError = (res: Response, error: AppError) => {
-    logger.error(`Application error occurred.  Status Code: ${error.statusCode} - Error: ${error.message}`);
+    logger.error(
+        `Application error occurred.  Status Code: ${error.statusCode} - Error: ${error.message}`,
+    );
     return res.status(error.statusCode).json({ message: error.message });
 };
 
@@ -55,19 +58,23 @@ const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
                 });
                 return;
             case 'P2003':
-                logger.error(`Foreign key constraint failed: ${error.meta?.target}`);
+                logger.error(
+                    `Foreign key constraint failed: ${error.meta?.target}`,
+                );
                 res.status(BAD_REQUEST).json({
                     error: 'Foreign key constraint failed',
                 });
                 return;
             case 'P2025':
-                logger.error(`Register not found: ${error.meta?.target}`);
+                logger.error(`Register not found: ${error}`);
                 res.status(NOT_FOUND).json({
                     error: 'Register not found',
                 });
                 return;
             default:
-                logger.error(`Unknown database error occurred: ${error.message}`);
+                logger.error(
+                    `Unknown database error occurred: ${error.message}`,
+                );
                 res.status(400).json({
                     error: 'Error on DB',
                     code: error.code,

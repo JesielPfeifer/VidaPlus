@@ -32,7 +32,9 @@ export class AdminController {
         );
 
         if (request.senha !== confirmaSenha) {
-            logger.error(`Senhas não coincidem para o e-mail: ${request.email}`);
+            logger.error(
+                `Senhas não coincidem para o e-mail: ${request.email}`,
+            );
             res.status(BAD_REQUEST).json({
                 error: 'Passwords do not match',
             });
@@ -56,7 +58,9 @@ export class AdminController {
         });
 
         if (!newAdmin) {
-            logger.error(`Failed to create admin for e-mail: ${request.email}.`);
+            logger.error(
+                `Failed to create admin for e-mail: ${request.email}.`,
+            );
             res.status(INTERNAL_SERVER_ERROR).json({
                 error: 'Internal Server Error',
             });
@@ -70,7 +74,9 @@ export class AdminController {
         );
 
         if (token === null) {
-            logger.error(`Failed to generate token for e-mail: ${request.email}.`);
+            logger.error(
+                `Failed to generate token for e-mail: ${request.email}.`,
+            );
             res.status(INTERNAL_SERVER_ERROR).json({
                 error: 'Internal Server Error',
             });
@@ -92,6 +98,8 @@ export class AdminController {
         );
 
         if (!adminUser) {
+            logger.error(`Admin not found with email: ${request.email}`);
+            // Log the error and return a generic message to avoid leaking information
             res.status(NOT_FOUND).json({ error: 'Invalid email or password' });
             return;
         }
@@ -102,6 +110,10 @@ export class AdminController {
         );
 
         if (!validPassword) {
+            logger.error(
+                `Invalid password for admin with email: ${request.email}`,
+            );
+            // Log the error and return a generic message to avoid leaking information
             res.status(BAD_REQUEST).json({
                 error: 'Invalid email or password',
             });
@@ -114,21 +126,23 @@ export class AdminController {
             { expiresIn: '1d' },
         );
 
-        res.status(OK).json({
-            msg: 'Admin logged in successfully',
-            token,
-        });
+        logger.info(`Admin logged in successfully: ${request.email}`);
+        res.status(OK).json({ token });
     });
+
     public deleteAdmin = catchErrors(async (req: Request, res: Response) => {
         const AdminId = req.params.id;
 
         const deleteAdmin = await this.adminService.deleteAdmin(AdminId);
 
         if (!deleteAdmin) {
+            logger.error(`Failed to delete admin: ${AdminId}`);
             res.status(BAD_REQUEST).json({ error: 'Failed to delete admin' });
             return;
         }
 
+        logger.info(`Admin deleted successfully: ${AdminId}`);
+        // Log the successful deletion
         res.status(OK).json({
             msg: 'Admin deleted successfully',
         });
@@ -140,10 +154,12 @@ export class AdminController {
         const adminData = await this.adminService.getAdminByEmail(adminEmail);
 
         if (!adminData) {
+            logger.error(`Admin not found: ${adminEmail}`);
             res.status(NOT_FOUND).json({ error: 'Admin not found' });
             return;
         }
 
+        logger.info(`Admin data retrieved successfully: ${adminEmail}`);
         res.status(OK).json({ ...adminData });
     });
 }

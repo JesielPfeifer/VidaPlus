@@ -9,6 +9,7 @@ import {
     OK,
 } from '../constants/httpCodes.constant';
 import { PrescricaoSchema } from '../schemas/schema';
+import logger from '../lib/logger';
 
 export class PrescriptionController {
     private prescriptionService: PrescriptionService;
@@ -28,6 +29,7 @@ export class PrescriptionController {
             );
 
             if (!existingReport) {
+                logger.error(`Report does not exist: ${request.prontuarioId}`);
                 return res.status(NOT_FOUND).json({
                     message:
                         'Report does not exist, cannot register prescription',
@@ -38,12 +40,20 @@ export class PrescriptionController {
                 await this.prescriptionService.registerPrescription(request);
 
             if (!prescription) {
+                logger.error(
+                    `Failed to register prescription: ${JSON.stringify(
+                        request,
+                    )}`,
+                );
                 return res.status(BAD_REQUEST).json({
                     message: 'Failed to register prescription',
                 });
             }
 
-            res.status(CREATED).json(prescription);
+            logger.info(
+                `Prescription registered successfully: ${prescription}`,
+            );
+            return res.status(CREATED).json(prescription);
         },
     );
 
@@ -56,6 +66,7 @@ export class PrescriptionController {
                 await this.prescriptionService.existsPrescription(id);
 
             if (!existingPrescription) {
+                logger.error(`Prescription does not exist: ${id}`);
                 return res.status(NOT_FOUND).json({
                     message:
                         'Prescription does not exist, cannot update prescription',
@@ -66,12 +77,16 @@ export class PrescriptionController {
                 await this.prescriptionService.updatePrescription(id, request);
 
             if (!prescription) {
+                logger.error(
+                    `Failed to update prescription: ${JSON.stringify(request)}`,
+                );
                 return res.status(BAD_REQUEST).json({
                     message: 'Failed to update prescription',
                 });
             }
 
-            res.status(OK).json(prescription);
+            logger.info(`Prescription updated successfully: ${prescription}`);
+            return res.status(OK).json(prescription);
         },
     );
 
@@ -83,6 +98,7 @@ export class PrescriptionController {
                 await this.prescriptionService.existsPrescription(id);
 
             if (!existingPrescription) {
+                logger.error(`Prescription does not exist: ${id}`);
                 return res.status(NOT_FOUND).json({
                     message:
                         'Prescription does not exist, cannot delete prescription',
@@ -92,12 +108,14 @@ export class PrescriptionController {
             await this.prescriptionService.deletePrescription(id);
 
             if (!existingPrescription) {
+                logger.error(`Failed to delete prescription: ${id}`);
                 return res.status(BAD_REQUEST).json({
                     message: 'Failed to delete prescription',
                 });
             }
 
-            res.status(OK).json({
+            logger.info(`Prescription deleted successfully: ${id}`);
+            return res.status(OK).json({
                 message: 'Prescription deleted successfully',
             });
         },

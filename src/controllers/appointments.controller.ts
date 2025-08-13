@@ -8,9 +8,10 @@ import {
 } from '../constants/httpCodes.constant';
 import { PatientService } from '../services/patient.service';
 import { HospitalService } from '../services/hospital.service';
-import { ConsultaSchema } from '../schemas/schema';
+import { ConsultaSchema, ConsultaSchemaUpdate } from '../schemas/schema';
 import { ProfessionalService } from '../services/professional.service';
 import { AppointmentService } from '../services/appointment.service';
+import logger from '../lib/logger';
 
 export class AppointmentController {
     private patientService: PatientService;
@@ -37,7 +38,18 @@ export class AppointmentController {
         const professionalExists =
             await this.professionalService.existsProfessional(profissionalId);
 
-        return patientExists && hospitalUnitExists && professionalExists;
+        const isValid = {
+            status: patientExists && hospitalUnitExists && professionalExists,
+            pacienteId: patientExists,
+            profissionalId: professionalExists,
+            unidadeId: hospitalUnitExists,
+        };
+
+        logger.debug(
+            `Appointment data is ${isValid.status ? 'valid' : 'invalid'}: ${JSON.stringify(isValid)}`,
+        );
+
+        return isValid.status;
     }
     /**
      * Registers a new appointment for a patient.
@@ -48,7 +60,7 @@ export class AppointmentController {
     public registerAppointment = catchErrors(
         async (req: Request, res: Response) => {
             const request = ConsultaSchema.parse(req.body);
-            const { pacienteId, profissionalId, unidadeId, ...params } =
+            const { pacienteId, profissionalId, unidadeId, online, ...params } =
                 request;
 
             const hasValidData = await this.validateAppointmentData(
@@ -58,17 +70,13 @@ export class AppointmentController {
             );
 
             if (!hasValidData) {
+                logger.error(
+                    'Invalid data provided for appointment registration',
+                );
                 return res.status(NOT_FOUND).json({
                     message: 'Invalid data provided.',
                 });
             }
-
-            console.log('Creating appointment with data:', {
-                pacienteId,
-                profissionalId,
-                unidadeId,
-                ...params,
-            });
 
             const appointment =
                 await this.appointmentService.registerAppointment({
@@ -79,6 +87,7 @@ export class AppointmentController {
                 });
 
             if (!appointment) {
+                logger.error('Failed to register appointment');
                 return res.status(BAD_REQUEST).json({
                     message: 'Failed to register appointment',
                 });
@@ -91,11 +100,29 @@ export class AppointmentController {
                         tipo: appointment.tipo,
                         status: appointment.status,
                     });
+                logger.info(
+                    `Calendar appointment registered successfully: ${JSON.stringify(calendarAppointment)}`,
+                );
                 if (!calendarAppointment) {
-                    console.log('Failed to create calendar appointment');
+                    logger.error('Failed to create calendar appointment');
+                }
+
+                if (online) {
+                    const telemedicina =
+                        await this.appointmentService.registerTelemedicina({
+                            consultaId: appointment.id,
+                            linkVideo: `https://vidaplus.com.br/videochamada/${appointment.id}`,
+                            tokenAcesso: 'abcdef123456',
+                        });
+                    if (!telemedicina) {
+                        logger.error('Failed to create telemedicine record');
+                    }
                 }
             }
 
+            logger.info(
+                `Appointment registered successfully: ${JSON.stringify(appointment)}`,
+            );
             return res.status(CREATED).json({
                 ...appointment,
             });
@@ -110,8 +137,15 @@ export class AppointmentController {
      */
     public updateAppointmentData = catchErrors(
         async (req: Request, res: Response) => {
-            const appointmentId = req.params.id;
             const request = ConsultaSchema.parse(req.body);
+            const appointmentId = req.params.id;
+            const {
+                pacienteId,
+                profissionalId,
+                unidadeId,
+                online,
+                ...appointmentData
+            } = request;
 
             const hasValidData = await this.validateAppointmentData(
                 request.pacienteId,
@@ -120,6 +154,7 @@ export class AppointmentController {
             );
 
             if (!hasValidData) {
+                logger.error('Invalid data provided for appointment update');
                 return res.status(NOT_FOUND).json({
                     message: 'Invalid data provided.',
                 });
@@ -128,29 +163,39 @@ export class AppointmentController {
             const updatedAppointment =
                 await this.appointmentService.updateAppointmentData(
                     appointmentId,
-                    request,
+                    appointmentData,
                 );
 
             if (!updatedAppointment) {
-                return res.status(NOT_FOUND).json({
-                    message: 'Appointment not found.',
+                logger.error('Failed to update appointment');
+                return res.status(BAD_REQUEST).json({
+                    message: 'Failed to update appointment',
                 });
+            } else {
+                const calendarAppointment =
+                    await this.appointmentService.updateCalendarAppointment(
+                        updatedAppointment.id,
+                        {
+                            dataHora: updatedAppointment.data,
+                            tipo: updatedAppointment.tipo,
+                            status: updatedAppointment.status,
+                        },
+                    );
+                logger.info(
+                    `Calendar appointment updated successfully: ${JSON.stringify(calendarAppointment)}`,
+                );
+                if (!calendarAppointment) {
+                    logger.error('Failed to update calendar appointment');
+                }
             }
 
+            logger.info(
+                `Appointment updated successfully: ${JSON.stringify(updatedAppointment)}`,
+            );
             return res.status(OK).json({
                 message: 'Appointment updated successfully.',
             });
         },
-    );
-
-    /**
-     * Retrieves appointments for a specific patient.
-     * @param req - The request object containing the patient's CPF.
-     * @param res - The response object to send back the appointments.
-     * @returns A JSON response with the patient's appointments or an error message.
-     */
-    public showAppointments = catchErrors(
-        async (req: Request, res: Response) => {},
     );
 
     /**
@@ -169,6 +214,7 @@ export class AppointmentController {
                 );
 
             if (!professionalData) {
+                logger.error('Professional not found');
                 res.status(NOT_FOUND).json({ msg: 'Professional not found' });
                 return;
             }
@@ -179,12 +225,16 @@ export class AppointmentController {
                 );
 
             if (!appointments) {
+                logger.error('No appointments found for this professional');
                 res.status(NOT_FOUND).json({
                     msg: 'No appointments found for this professional',
                 });
                 return;
             }
 
+            logger.info(
+                `${appointments.length} appointments found for professional ${professionalData.nome}`,
+            );
             res.status(OK).json(appointments);
             return;
         },
@@ -204,6 +254,7 @@ export class AppointmentController {
                 await this.patientService.findPatientById(patientId);
 
             if (!patient) {
+                logger.error('Patient not found');
                 res.status(NOT_FOUND).json({ msg: 'Patient not found' });
                 return;
             }
@@ -214,12 +265,16 @@ export class AppointmentController {
                 );
 
             if (appointments?.length === 0) {
+                logger.info('Patient has no appointments');
                 res.status(NOT_FOUND).json({
                     msg: 'Patient has no appointments',
                 });
                 return;
             }
 
+            logger.info(
+                `${appointments.length} appointments found for patient ${patient.nome}`,
+            );
             res.json(appointments);
         },
     );
@@ -238,10 +293,32 @@ export class AppointmentController {
                 await this.appointmentService.deleteAppointment(appointmentId);
 
             if (!deleted) {
+                logger.error('Appointment not found or could not be deleted');
                 res.status(NOT_FOUND).json({ msg: 'Appointment not found' });
                 return;
             }
 
+            const hasCalendarAppointment =
+                await this.appointmentService.hasCalendarAppointment(
+                    appointmentId,
+                );
+
+            if (hasCalendarAppointment) {
+                const calendarDeleted =
+                    await this.appointmentService.deleteCalendarAppointment(
+                        appointmentId,
+                    );
+                if (!calendarDeleted) {
+                    logger.error('Failed to delete calendar appointment');
+                    res.status(BAD_REQUEST).json({
+                        msg: 'Failed to delete calendar appointment',
+                    });
+                    return;
+                }
+                logger.info('Calendar appointment deleted successfully');
+            }
+
+            logger.info('Appointment deleted successfully');
             res.status(OK).json({ msg: 'Appointment deleted successfully' });
             return;
         },

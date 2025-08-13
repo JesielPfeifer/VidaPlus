@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const PacienteSchema = z.object({
     nome: z.string(),
-    cpf: z.string().length(11),
+    cpf: z.string().regex(/^\d{11}$/),
     email: z.string().email(),
     telefone: z.string(),
     dataNascimento: z.string().or(z.date()),
@@ -32,6 +32,15 @@ export const ConsultaSchema = z.object({
     profissionalId: z.string().uuid(),
     unidadeId: z.string().uuid(),
     data: z.string().or(z.date()),
+    online: z.boolean().optional(),
+    tipo: z.enum(['Consulta', 'Exame', 'Telemedicina']),
+    status: z.enum(['Agendada', 'Cancelada', 'Concluída']),
+    observacoes: z.string().optional(),
+});
+
+export const ConsultaSchemaUpdate = z.object({
+    data: z.string().or(z.date()),
+    online: z.boolean().optional(),
     tipo: z.enum(['Consulta', 'Exame', 'Telemedicina']),
     status: z.enum(['Agendada', 'Cancelada', 'Concluída']),
     observacoes: z.string().optional(),

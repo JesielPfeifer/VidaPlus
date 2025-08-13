@@ -9,7 +9,7 @@ import {
 import { InternacaoSchema, PacienteSchema } from '../schemas/schema';
 import { PatientService } from '../services/patient.service';
 import { HospitalService } from '../services/hospital.service';
-import { AppointmentService } from '../services/appointment.service';
+import logger from '../lib/logger';
 
 export class PatientController {
     private patientService: PatientService;
@@ -36,6 +36,7 @@ export class PatientController {
             );
 
             if (!hospitalUnit) {
+                logger.error(`Hospital unit not found: ${request.unidadeId}`);
                 res.status(NOT_FOUND).json({ msg: 'Hospital unit not found' });
                 return;
             }
@@ -47,12 +48,18 @@ export class PatientController {
                 dataNascimento: new Date(dataNascimento),
                 unidadeId: hospitalUnit.id,
             });
+
             if (!paciente) {
+                logger.error(
+                    `Error registering patient: ${JSON.stringify(request)}`,
+                );
                 res.status(BAD_REQUEST).json({
                     msg: 'Error registering patient',
                 });
                 return;
             }
+
+            logger.info(`Patient registered successfully: ${paciente}`);
             res.status(CREATED).json(paciente);
             return;
         },
@@ -71,6 +78,7 @@ export class PatientController {
         const patient = await this.patientService.findByCpf(cpf);
 
         if (!patient) {
+            logger.error(`Patient not found: ${cpf}`);
             res.status(NOT_FOUND).json({ msg: 'Patient not found' });
             return;
         }
@@ -86,12 +94,18 @@ export class PatientController {
                 genero: request.genero,
             },
         );
+
         if (!updatedPatient) {
+            logger.error(
+                `Error updating patient information: ${JSON.stringify(request)}`,
+            );
             res.status(BAD_REQUEST).json({
                 msg: 'Error updating patient information',
             });
             return;
         }
+
+        logger.info(`Patient information updated successfully: ${cpf}`);
         res.status(OK).json(updatedPatient);
     });
 
@@ -106,6 +120,7 @@ export class PatientController {
         const patient = await this.patientService.findPatientById(patientId);
 
         if (!patient) {
+            logger.error(`Patient not found: ${patientId}`);
             res.status(NOT_FOUND).json({ msg: 'Patient not found' });
             return;
         }
@@ -114,12 +129,14 @@ export class PatientController {
             await this.patientService.deletePatienById(patientId);
 
         if (!deletedPatient) {
+            logger.error(`Error deleting patient: ${patientId}`);
             res.status(BAD_REQUEST).json({
                 msg: 'Error deleting patient',
             });
             return;
         }
 
+        logger.info(`Patient deleted successfully: ${patientId}`);
         res.status(OK).json({ msg: 'Patient deleted successfully' });
         return;
     });
@@ -134,10 +151,12 @@ export class PatientController {
         const patient = await this.patientService.findByCpf(patientCpf);
 
         if (!patient) {
+            logger.error(`Patient not found: ${patientCpf}`);
             res.status(NOT_FOUND).json({ msg: 'Patient not found' });
             return;
         }
 
+        logger.info(`Patient data retrieved successfully: ${patientCpf}`);
         res.status(OK).json({ ...patient });
         return;
     });
@@ -151,6 +170,7 @@ export class PatientController {
                 request.pacienteId,
             );
             if (!patient) {
+                logger.error(`Patient not found: ${request.pacienteId}`);
                 res.status(NOT_FOUND).json({ msg: 'Patient not found' });
                 return;
             }
@@ -159,6 +179,7 @@ export class PatientController {
                 request.unidadeId,
             );
             if (!hospitalUnit) {
+                logger.error(`Hospital unit not found: ${request.unidadeId}`);
                 res.status(NOT_FOUND).json({ msg: 'Hospital unit not found' });
                 return;
             }
@@ -170,6 +191,9 @@ export class PatientController {
                     dataSaida: dataSaida ? new Date(dataSaida) : null,
                 });
 
+            logger.info(
+                `Hospitalization registered successfully: ${hospitalization}`,
+            );
             res.status(CREATED).json(hospitalization);
         },
     );

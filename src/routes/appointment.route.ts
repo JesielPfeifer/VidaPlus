@@ -7,22 +7,22 @@ export const appointmentRouter = express.Router();
 
 appointmentRouter.post(
     '/',
-    checkingAuth(['Administrador', 'Profissional']),
+    checkingAuth(['Administrador', 'Profissional', 'Usuario']),
     appointmentController.registerAppointment,
 );
 appointmentRouter.put(
     '/:id',
-    checkingAuth(['Administrador', 'Profissional']),
+    checkingAuth(['Administrador', 'Profissional', 'Usuario']),
     appointmentController.updateAppointmentData,
 );
 appointmentRouter.delete(
     '/:id',
-    checkingAuth(['Administrador', 'Profissional']),
+    checkingAuth(['Administrador', 'Profissional', 'Usuario']),
     appointmentController.deleteAppointment,
 );
 appointmentRouter.get(
     '/profissional/:id',
-    checkingAuth(['Administrador', 'Profissional']),
+    checkingAuth(['Administrador', 'Profissional', 'Usuario']),
     appointmentController.showProfessionalAppointments,
 );
 appointmentRouter.get(

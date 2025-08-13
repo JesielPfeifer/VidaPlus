@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../constants/envs.constant';
+import logger from '../lib/logger';
 
 export class TokenService {
     public signJwt = (
@@ -13,9 +14,9 @@ export class TokenService {
     public validateToken = (token: string): any => {
         try {
             return jwt.verify(token, JWT_SECRET);
-        } catch (error) {
-            return console.error('Invalid token', error);
+        } catch (error: any) {
+            logger.error(`Invalid token: ${error.message.trim()}`);
+            return null;
         }
     };
 }
-    
