@@ -52,6 +52,7 @@ Sistema de Gestão Hospitalar e de Serviços de Saúde (SGHSS) para a instituiç
 - [NodeJS v22.17.1](https://nodejs.org/dist/v22.18.0/node-v22.18.0-x64.msi)
 - [VSCode](https://code.visualstudio.com)
 - [GIT](https://git-scm.com/downloads)
+- [DOCKER DESKTOP](https://docs.docker.com/desktop/setup/install/windows-install/)
 
 1. Clone o repositório
 
