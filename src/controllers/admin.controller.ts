@@ -133,6 +133,14 @@ export class AdminController {
     public deleteAdmin = catchErrors(async (req: Request, res: Response) => {
         const AdminId = req.params.id;
 
+        const existsAdmin = await this.adminService.existsAdmin(AdminId);
+
+        if (!existsAdmin) {
+            logger.error(`Admin not found: ${AdminId}`);
+            res.status(NOT_FOUND).json({ error: 'Admin not found' });
+            return;
+        }
+
         const deleteAdmin = await this.adminService.deleteAdmin(AdminId);
 
         if (!deleteAdmin) {
@@ -142,7 +150,6 @@ export class AdminController {
         }
 
         logger.info(`Admin deleted successfully: ${AdminId}`);
-        // Log the successful deletion
         res.status(OK).json({
             msg: 'Admin deleted successfully',
         });

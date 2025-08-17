@@ -59,7 +59,9 @@ Sistema de Gestão Hospitalar e de Serviços de Saúde (SGHSS) para a instituiç
     git clone https://github.com/JesielPfeifer/VidaPlus.git
     ```
 
-> OBS: Após baixar os programas de pré-requisito, você pode instalar a aplicação de forma automatizada basta executar o script install-app-windows.bat (para Windows) ou install-app.sh (Unix)
+> OBS: Após baixar os programas de pré-requisito, você pode instalar a aplicação de forma automatizada basta executar o script install-app-windows.bat (para Windows) ou install-app.sh (Unix).
+
+> OBS²: A aplicação pode ser inteiramente executada usando docker, para isso, basta executar o script "install-app-docker.bat".
 
 2. Instale as dependências:
 
@@ -115,73 +117,6 @@ Bug documentado em: https://www.prisma.io/docs/orm/reference/prisma-schema-refer
 new Date('1999-04-03');
 ```
 
-### Cadastro de Paciente
-
-```json
-{
-    "nome": "Maria",
-    "cpf": "01232312391",
-    "email": "mari113b@exemplo.com",
-    "telefone": "01234567890",
-    "dataNascimento": "1988-07-01",
-    "genero": "Feminino",
-    "unidadeId": "0bc488f0-210a-4bbd-813a-0dc858aa21ac"
-}
-```
-
-### Atualização de Paciente
-
-```json
-{
-    "email": "novoemail@exemplo.com",
-    "telefone": "11999999999"
-}
-```
-
-### Cadastro de Profissional de Saúde
-
-```json
-{
-    "nome": "Dr. João",
-    "crm": "123456",
-    "especialidade": "Cardiologia",
-    "email": "joao@exemplo.com",
-    "unidadeId": "0bc488f0-210a-4bbd-813a-0dc858aa21ac"
-}
-```
-
-### Agendamento de Consulta
-
-```json
-{
-    "pacienteCpf": "01232312391",
-    "profissionalId": "c1a2b3d4-e5f6-7890-abcd-1234567890ef",
-    "dataHora": "2025-07-10T14:00:00Z",
-    "tipo": "Consulta"
-}
-```
-
-### Teleconsulta
-
-```json
-{
-    "pacienteCpf": "01232312391",
-    "profissionalId": "c1a2b3d4-e5f6-7890-abcd-1234567890ef",
-    "dataHora": "2025-07-10T16:00:00Z"
-}
-```
-
-## Segurança
-
-- Controle de acesso por perfil de usuário
-- Dados sensíveis criptografados
-- Logs de auditoria para todas as operações críticas
-- Conformidade com a LGPD
-
-## Escalabilidade e Disponibilidade
-
-- Suporte a múltiplas unidades hospitalares
-- Backups automáticos e logs robustos
-- Disponibilidade mínima de 99,5%
+Todas as requisições estão disponiveis e documentadas em: https://documenter.getpostman.com/view/30201252/2sB3BGGpjD.
 
 ---
